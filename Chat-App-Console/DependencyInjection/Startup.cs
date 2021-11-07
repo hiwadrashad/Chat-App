@@ -1,5 +1,5 @@
-﻿using Chat_App_Database.Mocks;
-using Chat_App_Library.Singletons;
+﻿using Chat_App_Library.Singletons;
+using Chat_App_Logic.Mocks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;

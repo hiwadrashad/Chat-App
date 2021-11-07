@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Chat-App-Bussiness-Logic\Chat-App-Bussiness-Logic.csproj" />
     <ProjectReference Include="..\Chat-App-Database\Chat-App-Database.csproj" />
     <ProjectReference Include="..\Chat-App-Library\Chat-App-Library.csproj" />
   </ItemGroup>

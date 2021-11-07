@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chat_App_Database.Repositories
+namespace Chat_App_Logic.Repositories
 {
     public class ChatDbContextRepository : IRepository
     {
@@ -149,6 +149,7 @@ namespace Chat_App_Database.Repositories
         public void AddMessageToGroupChat(Message message, int groupid)
         {
             _dbContext.GroupChatDatabase.FirstOrDefault(a => a.Id == groupid).Messages.Add(message);
+            _dbContext.MessageDatabase.Add(message);
             _dbContext.SaveChanges();
         }
 
@@ -157,12 +158,14 @@ namespace Chat_App_Database.Repositories
         {
             _dbContext.SingleUserChatDatabase.FirstOrDefault(a => a.Id == singleuserchatid)
             .Messages.Add(message);
+            _dbContext.MessageDatabase.Add(message);
             _dbContext.SaveChanges();
         }
 
         public void AddMessageToGeneralChat(Message message, int groupchatid)
         {
             _dbContext.GeneralChatDatabase.FirstOrDefault(a => a.Id == groupchatid).Messages.Add(message);
+            _dbContext.MessageDatabase.Add(message);
             _dbContext.SaveChanges();
         }
 
@@ -220,6 +223,9 @@ namespace Chat_App_Database.Repositories
             .Messages.Where(a => a.Id == groupid).FirstOrDefault();
             item.EndDate = DateTime.Now;
             item.Text = message.Text;
+            var item2 = _dbContext.MessageDatabase.FirstOrDefault(a => a.Id == groupid);
+            item2.EndDate = DateTime.Now;
+            item2.Text = message.Text;
             _dbContext.SaveChanges();
         }
 
@@ -230,6 +236,9 @@ namespace Chat_App_Database.Repositories
             .Messages.Where(a => a.Id == singleuserchatid).FirstOrDefault();
             item.EndDate = DateTime.Now;
             item.Text = message.Text;
+            var item2 = _dbContext.MessageDatabase.FirstOrDefault(a => a.Id == singleuserchatid);
+            item2.EndDate = DateTime.Now;
+            item2.Text = message.Text;
             _dbContext.SaveChanges();
         }
 
@@ -239,6 +248,9 @@ namespace Chat_App_Database.Repositories
             .Messages.Where(a => a.Id == groupchatid).FirstOrDefault();
             item.EndDate = DateTime.Now;
             item.Text = message.Text;
+            var item2 = _dbContext.MessageDatabase.FirstOrDefault(a => a.Id == groupchatid);
+            item2.EndDate = DateTime.Now;
+            item2.Text = message.Text;
             _dbContext.SaveChanges();
         }
 

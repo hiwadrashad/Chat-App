@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Chat_App_Library.Singletons
 {
 
-    public class DatabaseSingleton
+    public class DatabaseSingleton : IDatabaseSingleton
     {
         private static IRepository _repository;
         private DatabaseSingleton()

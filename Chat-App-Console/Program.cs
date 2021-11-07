@@ -1,6 +1,6 @@
-﻿using Chat_App_Database.Mocks;
-using Chat_App_Library.Models;
+﻿using Chat_App_Library.Models;
 using Chat_App_Library.Singletons;
+using Chat_App_Logic.Mocks;
 using System;
 
 namespace Chat_App_Console

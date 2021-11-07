@@ -1,7 +1,9 @@
-﻿using Chat_App_Library.Interfaces;
+﻿using Chat_App_JWT_API.Configuration;
+using Chat_App_Library.Interfaces;
 using Chat_App_Library.Models;
 using Chat_App_Library.Singletons;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +11,7 @@ using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace Chat_App_API.Controllers
+namespace Chat_App__JWT_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -17,11 +19,49 @@ namespace Chat_App_API.Controllers
     {
         IDatabaseSingleton _databaseSingleton;
         IRepository _repo;
-        public CredentialsController(IDatabaseSingleton databaseSingleton)
+        private readonly JwtConfig _jwtConfig;
+        public CredentialsController(IDatabaseSingleton databaseSingleton, IOptionsMonitor<JwtConfig> optionsMonitor)
         {
             _databaseSingleton = databaseSingleton;
             _repo = databaseSingleton.GetRepository();
+            _jwtConfig = optionsMonitor.CurrentValue;
         }
+
+        [HttpPost("api/register")]
+        public IActionResult Register([FromBody] User input)
+        {
+            if (ModelState.IsValid)
+            {
+                var existingUsers = _databaseSingleton.GetRepository().GetUsers();
+
+                if (existingUsers.Any(a => a == input))
+                {
+                    return BadRequest(new RegistrationResponse()
+                    {
+                        Errors = new List<string>() {
+                        "Email already in use"
+                        },
+                        Success = false
+                    });
+                }
+                var jwtToken = Chat_App_JWT_API.JWT.JWTTokens.GenerateJwtToken(input);
+                _repo.AddUser(input);
+                return Ok(new RegistrationResponse()
+                {
+                    Success = true,
+                    Token = jwtToken
+                });
+            }
+
+            return BadRequest(new RegistrationResponse()
+            {
+                Errors = new List<string>() { 
+                "Invalid payload"
+                },
+                Success = false
+            });
+        }
+
 
         [HttpPost("api/adduser")]
         public void AddUser([FromBody] User input)

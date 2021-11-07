@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chat_App_Database.Mocks
+namespace Chat_App_Logic.Mocks
 {
     public class MockingRepository : IRepository
     {
@@ -242,6 +242,9 @@ namespace Chat_App_Database.Mocks
             .Messages.Where(a => a.Id == groupid).FirstOrDefault();
             item.EndDate = DateTime.Now;
             item.Text = message.Text;
+            var item2 = _messages.FirstOrDefault(a => a.Id == groupid);
+            item2.EndDate = DateTime.Now;
+            item2.Text = message.Text;
         }
 
 
@@ -251,6 +254,9 @@ namespace Chat_App_Database.Mocks
             .Messages.Where(a => a.Id == singleuserchatid).FirstOrDefault();
             item.EndDate = DateTime.Now;
             item.Text = message.Text;
+            var item2 = _messages.FirstOrDefault(a => a.Id == singleuserchatid);
+            item2.EndDate = DateTime.Now;
+            item2.Text = message.Text;
         }
 
         public void UpdateMessageToGeneralChat(Message message, int groupchatid)
@@ -259,22 +265,28 @@ namespace Chat_App_Database.Mocks
             .Messages.Where(a => a.Id == groupchatid).FirstOrDefault();
             item.EndDate = DateTime.Now;
             item.Text = message.Text;
+            var item2 = _messages.FirstOrDefault(a => a.Id == groupchatid);
+            item2.EndDate = DateTime.Now;
+            item2.Text = message.Text;
         }
 
         public void AddMessageToGroupChat(Message message, int groupid)
         {
             _groupchat.FirstOrDefault(a => a.Id == groupid).Messages.Add(message);
+            _messages.Add(message);
         }
 
 
         public void AddMessageToSingleUserChat(Message message, int singleuserchatid)
         {
             _singleUserChats.FirstOrDefault(a => a.Id == singleuserchatid).Messages.Add(message);
+            _messages.Add(message);
         }
 
         public void AddMessageToGeneralChat(Message message, int groupchatid)
         {
             _generalchat.FirstOrDefault(a => a.Id == groupchatid).Messages.Add(message);
+            _messages.Add(message);
         }
 
         public void DeleteUser(int id)

@@ -1,5 +1,6 @@
-using Chat_App_Database.Mocks;
+using Chat_App_Library.Interfaces;
 using Chat_App_Library.Singletons;
+using Chat_App_Logic.Mocks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -34,6 +35,7 @@ namespace Chat_App_API
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Chat_App_API", Version = "v1" });
             });
+            services.AddSingleton(typeof(IDatabaseSingleton),DatabaseSingleton.GetSingleton());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
