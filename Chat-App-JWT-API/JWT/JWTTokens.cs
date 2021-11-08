@@ -1,4 +1,5 @@
 ﻿using Chat_App_JWT_API.Configuration;
+using Chat_App_Library.Interfaces;
 using Chat_App_Library.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -15,12 +16,12 @@ namespace Chat_App_JWT_API.JWT
     public class JWTTokens
     {
 
-        private static JwtConfig _jwtConfig;
-        public JWTTokens (IOptionsMonitor<JwtConfig> optionsMonitor)
+        private readonly JwtConfig _jwtConfig;
+        public JWTTokens (JwtConfig optionsMonitor)
         {
-            _jwtConfig = optionsMonitor.CurrentValue;
+            _jwtConfig = optionsMonitor;
         }
-        public static string GenerateJwtToken(User user)
+        public string GenerateJwtToken(User user)
         {
             var jwtTokenHandler = new JwtSecurityTokenHandler();
 

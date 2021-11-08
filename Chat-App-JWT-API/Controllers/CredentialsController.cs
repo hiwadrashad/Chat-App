@@ -1,9 +1,12 @@
-﻿using Chat_App_JWT_API.Configuration;
+﻿using Chat_App_JWT_API.Attributes;
+using Chat_App_JWT_API.Configuration;
+using Chat_App_JWT_API.JWT;
 using Chat_App_Library.Interfaces;
 using Chat_App_Library.Models;
 using Chat_App_Library.Singletons;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,14 +20,16 @@ namespace Chat_App__JWT_API.Controllers
     [ApiController]
     public class CredentialsController : ControllerBase
     {
-        IDatabaseSingleton _databaseSingleton;
-        IRepository _repo;
+        private IDatabaseSingleton _databaseSingleton;
+        private IRepository _repo;
         private readonly JwtConfig _jwtConfig;
+        private JWTTokens _tokenGenerator;
         public CredentialsController(IDatabaseSingleton databaseSingleton, IOptionsMonitor<JwtConfig> optionsMonitor)
         {
             _databaseSingleton = databaseSingleton;
             _repo = databaseSingleton.GetRepository();
             _jwtConfig = optionsMonitor.CurrentValue;
+            _tokenGenerator = new JWTTokens(_jwtConfig);
         }
 
         [HttpPost("api/register")]
@@ -32,6 +37,10 @@ namespace Chat_App__JWT_API.Controllers
         {
             if (ModelState.IsValid)
             {
+                var test = teststaticclass.tempvalue;
+
+                var testtoken = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
                 var existingUsers = _databaseSingleton.GetRepository().GetUsers();
 
                 if (existingUsers.Any(a => a == input))
@@ -44,7 +53,7 @@ namespace Chat_App__JWT_API.Controllers
                         Success = false
                     });
                 }
-                var jwtToken = Chat_App_JWT_API.JWT.JWTTokens.GenerateJwtToken(input);
+                var jwtToken = _tokenGenerator.GenerateJwtToken(input);
                 _repo.AddUser(input);
                 return Ok(new RegistrationResponse()
                 {
@@ -61,6 +70,48 @@ namespace Chat_App__JWT_API.Controllers
                 Success = false
             });
         }
+
+        [HttpPost("api/login")]
+        public IActionResult Login([FromBody] User input)
+        {
+            if (ModelState.IsValid)
+            {
+                var existingUsers = _databaseSingleton.GetRepository().GetUsers();
+                teststaticclass.tempvalue = "somevalue";
+                if (existingUsers.Any(a => a.Id == input.Id))
+                {
+                    var jwtToken = _tokenGenerator.GenerateJwtToken(input);
+                    HttpContext.Request.Headers["Authorization"] = jwtToken;
+                    var testtoken = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+                    return Ok(new RegistrationResponse()
+                    {
+                        Success = true,
+                        Token = jwtToken
+                    });
+                }
+                else
+                {
+
+                    return BadRequest(new RegistrationResponse()
+                    {
+                        Errors = new List<string>() {
+                "Invalid payload"
+                },
+                        Success = false
+                    });
+                }
+  
+            }
+            return BadRequest(new RegistrationResponse()
+            {
+                Errors = new List<string>() {
+                "Invalid payload"
+                },
+                Success = false
+            });
+
+
+        } 
 
 
         [HttpPost("api/adduser")]

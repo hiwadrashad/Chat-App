@@ -12,7 +12,15 @@ namespace Chat_App_Logic.Mocks
     {
 
         private static List<User> _users = new List<User>()
-            {
+            {         new User() {
+                Email = "user@example.com",
+                Id = 0,
+                Name = "string",
+                Password = "string",
+                Role = Chat_App_Library.Enums.Role.Admin,
+                Username = "string"
+
+              },
               new User() {
                 Email = "test",
                 Id = 1,

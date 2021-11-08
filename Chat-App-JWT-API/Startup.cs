@@ -1,4 +1,5 @@
 using Chat_App_JWT_API.Configuration;
+using Chat_App_JWT_API.Middleware;
 using Chat_App_Library.Interfaces;
 using Chat_App_Library.Singletons;
 using Chat_App_Logic.Mocks;
@@ -37,9 +38,16 @@ namespace Chat_App_JWT_API
             DatabaseSingleton.GetSingleton().SetRepository(new MockingRepository());
             services.Configure<JwtConfig>(Configuration.GetSection("JwtConfig"));
             services.AddControllers();
+            
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Chat_App_JWT_API", Version = "v1" });
+            });
+            services.AddCors(options => {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+                });
             });
             services.AddAuthentication(options =>
             {
@@ -83,7 +91,11 @@ namespace Chat_App_JWT_API
 
             app.UseRouting();
 
+            app.UseCors();
+
             app.UseAuthorization();
+
+            app.UseMiddleware<JwtMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {
