@@ -52,6 +52,29 @@ namespace Chat_App_Logic.Repositories
                 _dbContext.UserDatabase.Remove(item);
             }
         }
+        public List<RefreshToken> GetAllRefreshTokens()
+        {
+            return _dbContext.RefreshTokens.ToList();
+        }
+        public void UpdateRefreshToken(RefreshToken token)
+        {
+            var foundtoken = _dbContext.RefreshTokens.Where(a => a.Id == token.Id).FirstOrDefault();
+            foundtoken.AddedDate = token.AddedDate;
+            foundtoken.ExpiryDate = token.ExpiryDate;
+            foundtoken.Id = token.Id;
+            foundtoken.IsRevoked = token.IsRevoked;
+            foundtoken.IsUsed = token.IsUsed;
+            foundtoken.jwtId = token.jwtId;
+            foundtoken.Token = token.Token;
+            foundtoken.User = token.User;
+            foundtoken.UserId = token.UserId;
+            _dbContext.SaveChanges();
+        }
+        public async Task AddRefreshToken(RefreshToken token)
+        {
+            await _dbContext.RefreshTokens.AddAsync(token);
+            _dbContext.SaveChanges();
+        }
 
         public void AddUser(User user)
         {
@@ -253,6 +276,5 @@ namespace Chat_App_Logic.Repositories
             item2.Text = message.Text;
             _dbContext.SaveChanges();
         }
-
     }
 }

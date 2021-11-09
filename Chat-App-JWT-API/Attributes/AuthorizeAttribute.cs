@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,7 @@ namespace Chat_App_JWT_API.Attributes
         public void OnAuthorization(AuthorizationFilterContext context)
         {
             var user = (User)context.HttpContext.Items["User"];
+
             if (user == null)
             {
                 // not logged in

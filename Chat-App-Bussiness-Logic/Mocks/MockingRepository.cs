@@ -10,7 +10,7 @@ namespace Chat_App_Logic.Mocks
 {
     public class MockingRepository : IRepository
     {
-
+        private static List<RefreshToken> _refreshTokens = new List<RefreshToken>();
         private static List<User> _users = new List<User>()
             {         new User() {
                 Email = "user@example.com",
@@ -158,6 +158,32 @@ namespace Chat_App_Logic.Mocks
                 _mockingRepository = new MockingRepository();
             }
             return _mockingRepository;
+        }
+
+        public List<RefreshToken> GetAllRefreshTokens()
+        {
+            return _refreshTokens;
+        }
+
+        public void UpdateRefreshToken(RefreshToken token)
+        {
+            var foundtoken = _refreshTokens.Where(a => a.Id == token.Id).FirstOrDefault();
+            foundtoken.AddedDate = token.AddedDate;
+            foundtoken.ExpiryDate = token.ExpiryDate;
+            foundtoken.Id = token.Id;
+            foundtoken.IsRevoked = token.IsRevoked;
+            foundtoken.IsUsed = token.IsUsed;
+            foundtoken.jwtId = token.jwtId;
+            foundtoken.Token = token.Token;
+            foundtoken.User = token.User;
+            foundtoken.UserId = token.UserId;
+        }
+
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public async Task AddRefreshToken(RefreshToken token)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        {
+            _refreshTokens.Add(token);
         }
         public void AddUser(User user)
         {

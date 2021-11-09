@@ -7,6 +7,7 @@ using Chat_App_Library.Singletons;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,16 +25,21 @@ namespace Chat_App__JWT_API.Controllers
         private IRepository _repo;
         private readonly JwtConfig _jwtConfig;
         private JWTTokens _tokenGenerator;
-        public CredentialsController(IDatabaseSingleton databaseSingleton, IOptionsMonitor<JwtConfig> optionsMonitor)
+        private readonly TokenValidationParameters _tokenValidationParams;
+        private readonly JWTVerification _jwtVerification;
+        public CredentialsController(IDatabaseSingleton databaseSingleton, IOptionsMonitor<JwtConfig> optionsMonitor, 
+            TokenValidationParameters tokenValidationParameters)
         {
             _databaseSingleton = databaseSingleton;
             _repo = databaseSingleton.GetRepository();
             _jwtConfig = optionsMonitor.CurrentValue;
-            _tokenGenerator = new JWTTokens(_jwtConfig);
+            _tokenGenerator = new JWTTokens(_jwtConfig, databaseSingleton);
+            _tokenValidationParams = tokenValidationParameters;
+            _jwtVerification = new JWTVerification(databaseSingleton, optionsMonitor, tokenValidationParameters);
         }
 
         [HttpPost("api/register")]
-        public IActionResult Register([FromBody] User input)
+        public async Task<IActionResult> Register([FromBody] User input)
         {
             if (ModelState.IsValid)
             {
@@ -53,13 +59,9 @@ namespace Chat_App__JWT_API.Controllers
                         Success = false
                     });
                 }
-                var jwtToken = _tokenGenerator.GenerateJwtToken(input);
+                var jwtToken = await _tokenGenerator.GenerateJwtToken(input);
                 _repo.AddUser(input);
-                return Ok(new RegistrationResponse()
-                {
-                    Success = true,
-                    Token = jwtToken
-                });
+                return Ok(jwtToken);
             }
 
             return BadRequest(new RegistrationResponse()
@@ -70,9 +72,10 @@ namespace Chat_App__JWT_API.Controllers
                 Success = false
             });
         }
-
+       
         [HttpPost("api/login")]
-        public IActionResult Login([FromBody] User input)
+       
+        public async Task<IActionResult> Login([FromBody] User input)
         {
             if (ModelState.IsValid)
             {
@@ -80,14 +83,10 @@ namespace Chat_App__JWT_API.Controllers
                 teststaticclass.tempvalue = "somevalue";
                 if (existingUsers.Any(a => a.Id == input.Id))
                 {
-                    var jwtToken = _tokenGenerator.GenerateJwtToken(input);
-                    HttpContext.Request.Headers["Authorization"] = jwtToken;
+                    var jwtToken = await _tokenGenerator.GenerateJwtToken(input);
+                    //HttpContext.Request.Headers["Authorization"] = jwtToken;
                     var testtoken = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-                    return Ok(new RegistrationResponse()
-                    {
-                        Success = true,
-                        Token = jwtToken
-                    });
+                    return Ok(jwtToken);
                 }
                 else
                 {
@@ -111,14 +110,46 @@ namespace Chat_App__JWT_API.Controllers
             });
 
 
-        } 
+        }
 
+        [HttpPost("api/refreshtoken")]
+        public async Task<IActionResult> RefreshToken([FromBody] TokenRequest tokenRequest)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _jwtVerification.VerifyAndGenerateToken(tokenRequest);
+
+                if (result == null)
+                {
+
+                    return BadRequest(new RegistrationResponse()
+                    {
+                        Errors = new List<string>() {
+                        "Invalid tokens"
+                    },
+                        Success = false
+                    });
+                }
+
+                return Ok(result);
+            }
+
+            return BadRequest(new RegistrationResponse()
+            {
+                Errors = new List<string>() { 
+                    "Invalid payload"
+                },
+                Success = false
+            });
+        
+        }
 
         [HttpPost("api/adduser")]
         public void AddUser([FromBody] User input)
         {
             _repo.AddUser(input);
         }
+        [Authorize]
         [HttpGet("api/getusers")]
         public IEnumerable<User> GetUsers()
         {

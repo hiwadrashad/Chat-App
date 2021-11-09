@@ -2,6 +2,7 @@
 using Chat_App_Library.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -26,11 +27,15 @@ namespace Chat_App_JWT_API.Middleware
 
         public async Task Invoke(HttpContext context)
         {
-            var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            StringValues token;
+            context.Request.Headers.TryGetValue("Authorization", out token);
 
 
-            if (token != null)
-                attachUserToContext(context, _userService, token);
+            if (token.Count != 0)
+            {
+                var formattedttoken = token.ToString()?.Split(" ").Last();
+                attachUserToContext(context, _userService, formattedttoken);
+            }
 
             await _next(context);
         }
@@ -51,7 +56,7 @@ namespace Chat_App_JWT_API.Middleware
                 }, out SecurityToken validatedToken);
 
                 var jwtToken = (JwtSecurityToken)validatedToken;
-                var userId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
+                var userId = int.Parse(jwtToken.Claims.First(x => x.Type == "Id").Value);
 
                 // attach user to context on successful jwt validation
                 context.Items["User"] = userService.GetRepository().GetUserById(userId);

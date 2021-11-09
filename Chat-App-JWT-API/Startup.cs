@@ -38,7 +38,6 @@ namespace Chat_App_JWT_API
             DatabaseSingleton.GetSingleton().SetRepository(new MockingRepository());
             services.Configure<JwtConfig>(Configuration.GetSection("JwtConfig"));
             services.AddControllers();
-            
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Chat_App_JWT_API", Version = "v1" });
@@ -49,6 +48,18 @@ namespace Chat_App_JWT_API
                     builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
                 });
             });
+            var key = Encoding.ASCII.GetBytes(Configuration["JwtConfig:Secret"]);
+
+            var tokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateLifetime = true,
+                RequireExpirationTime = false
+            };
+            services.AddSingleton(tokenValidationParameters);
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -56,18 +67,9 @@ namespace Chat_App_JWT_API
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(jwt =>
             {
-                var key = Encoding.ASCII.GetBytes(Configuration["JwtConfig:Secret"]);
 
                 jwt.SaveToken = true;
-                jwt.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ValidateLifetime = true,
-                    RequireExpirationTime = false
-                };
+                jwt.TokenValidationParameters = tokenValidationParameters;
             });
 
             //services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).addEntityFrameworkStores

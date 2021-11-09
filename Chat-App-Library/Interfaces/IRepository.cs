@@ -10,6 +10,9 @@ namespace Chat_App_Library.Interfaces
     public interface IRepository
     {
 #nullable enable
+        public void UpdateRefreshToken(RefreshToken token);
+        public List<RefreshToken> GetAllRefreshTokens();
+        public Task AddRefreshToken(RefreshToken token);
         public void AddUser(User user);
         public void AddGroupChat(GroupChat groupChat);
         public void AddSingleUserChat(SingleUserChat singleUserChat);

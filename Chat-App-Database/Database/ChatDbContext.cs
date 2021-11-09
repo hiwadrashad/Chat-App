@@ -15,6 +15,7 @@ namespace Chat_App_Database.Database
         public DbSet<GeneralChat> GeneralChatDatabase { get; set; }
         public DbSet<SingleUserChat> SingleUserChatDatabase { get; set; }
         public DbSet<Message> MessageDatabase { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {

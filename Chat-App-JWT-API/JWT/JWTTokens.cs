@@ -17,11 +17,13 @@ namespace Chat_App_JWT_API.JWT
     {
 
         private readonly JwtConfig _jwtConfig;
-        public JWTTokens (JwtConfig optionsMonitor)
+        private IDatabaseSingleton _databaseSingleton;
+        public JWTTokens (JwtConfig optionsMonitor, IDatabaseSingleton databaseSingleton)
         {
             _jwtConfig = optionsMonitor;
+            _databaseSingleton = databaseSingleton;
         }
-        public string GenerateJwtToken(User user)
+        public async Task<AuthResult> GenerateJwtToken(User user)
         {
             var jwtTokenHandler = new JwtSecurityTokenHandler();
 
@@ -36,14 +38,58 @@ namespace Chat_App_JWT_API.JWT
                     new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                 }),
-                Expires = DateTime.UtcNow.AddMinutes(30),
+                Expires = DateTime.UtcNow.AddSeconds(30),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
             var token = jwtTokenHandler.CreateToken(tokenDescriptor);
             var jwtToken = jwtTokenHandler.WriteToken(token);
 
-            return jwtToken;
+            var refreshToken = new RefreshToken()
+            {
+                jwtId = token.Id,
+                IsUsed = false,
+                IsRevoked = false,
+                UserId = user.Id,
+                AddedDate = DateTime.UtcNow,
+                ExpiryDate = DateTime.UtcNow.AddMonths(6),
+                Token = Guid.NewGuid().ToString()
+            };
+
+            await _databaseSingleton.GetRepository().AddRefreshToken(refreshToken);
+
+            return new AuthResult()
+            {
+                Token = jwtToken,
+                Success = true,
+                RefreshToken = refreshToken.Token
+            };
         }
+
+
+        //public string GenerateJwtToken(User user)
+        //{
+        //    var jwtTokenHandler = new JwtSecurityTokenHandler();
+
+        //    var key = Encoding.ASCII.GetBytes(_jwtConfig.Secret);
+
+        //    var tokenDescriptor = new SecurityTokenDescriptor
+        //    {
+        //        Subject = new System.Security.Claims.ClaimsIdentity(new[] {
+        //            new Claim("Id", user.Id.ToString()),
+        //            new Claim("Username", user.Username),
+        //            new Claim("Email", user.Email),
+        //            new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+        //            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        //        }),
+        //        Expires = DateTime.UtcNow.AddSeconds(30),
+        //        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+        //    };
+
+        //    var token = jwtTokenHandler.CreateToken(tokenDescriptor);
+        //    var jwtToken = jwtTokenHandler.WriteToken(token);
+
+        //    return jwtToken;
+        //}
     }
 }
