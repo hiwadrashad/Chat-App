@@ -53,12 +53,16 @@ namespace Chat_App__JWT_API.Controllers
                     return BadRequest(new RegistrationResponse()
                     {
                         Errors = new List<string>() {
-                        "Email already in use"
+                        "Userdata already in use"
                         },
                         Success = false
                     });
                 }
                 var jwtToken = await _tokenGenerator.GenerateJwtToken(input);
+                input.Salt = Chat_App_Library.Constants.Salts.Saltvalue;
+                input.HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash(input.
+                AttemptedPassword, Chat_App_Library.Constants.Salts.Saltvalue));
+                input.AttemptedPassword = "";
                 _repo.AddUser(input);
                 return Ok(jwtToken);
             }
@@ -81,11 +85,26 @@ namespace Chat_App__JWT_API.Controllers
                 var existingUsers = _databaseSingleton.GetRepository().GetUsers();
                 if (existingUsers.Any(a => a.Id == input.Id))
                 {
-                    var jwtToken = await _tokenGenerator.GenerateJwtToken(input);
-                    //HttpContext.Request.Headers["Authorization"] = jwtToken;
-                    var testtoken = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-                    AuthResultSingleton.GetSingleton().SetAuth(jwtToken);
-                    return Ok(jwtToken);
+                    input.HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash(input.AttemptedPassword, input.Salt));
+                    var databaseuser = existingUsers.FirstOrDefault(a => a.Email == a.Email);
+                    if (Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.CompareHash(input.AttemptedPassword, databaseuser.HashBase64, input.Salt))
+                    {
+                        var jwtToken = await _tokenGenerator.GenerateJwtToken(input);
+                        //HttpContext.Request.Headers["Authorization"] = jwtToken;
+                        var testtoken = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+                        AuthResultSingleton.GetSingleton().SetAuth(jwtToken);
+                        return Ok(jwtToken);
+                    }
+                    else
+                    {
+                        return BadRequest(new RegistrationResponse()
+                        {
+                            Errors = new List<string>() {
+                            "Incorrect user info"
+                            },
+                            Success = false
+                        });
+                    }
                 }
                 else
                 {
@@ -116,21 +135,21 @@ namespace Chat_App__JWT_API.Controllers
         {
             if (ModelState.IsValid)
             {
-                //var result = await _jwtVerification.VerifyAndGenerateToken(tokenRequest);
+                var result = await _jwtVerification.VerifyAndGenerateToken(tokenRequest);
 
-                //if (result == null)
-                //{
+                if (result == null)
+                {
 
-                //    return BadRequest(new RegistrationResponse()
-                //    {
-                //        Errors = new List<string>() {
-                //        "Invalid tokens"
-                //    },
-                //        Success = false
-                //    });
-                //}
+                    return BadRequest(new RegistrationResponse()
+                    {
+                        Errors = new List<string>() {
+                        "Invalid tokens"
+                    },
+                        Success = false
+                    });
+                }
 
-                //return Ok(result);
+                return Ok(result);
             }
 
             return BadRequest(new RegistrationResponse()

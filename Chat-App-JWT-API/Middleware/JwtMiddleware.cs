@@ -55,9 +55,9 @@ namespace Chat_App_JWT_API.Middleware
                 var formattedttoken = token.ToString()?.Split(" ").Last();
                 if (await generateAndAttachNewJWTToken(context, _userService, formattedttoken))
                 {
-                    attachUserToContext(context, _userService, formattedttoken);                   
+                    attachUserToContext(context, _userService, formattedttoken);
                 }
-     
+
             }
 
             await _next(context);
@@ -86,7 +86,7 @@ namespace Chat_App_JWT_API.Middleware
                 TokenRequest request = new TokenRequest();
                 request.Token = AuthResultSingleton.GetSingleton().GetAuth().Token;
                 request.RefreshToken = AuthResultSingleton.GetSingleton().GetAuth().RefreshToken;
-                var generatedjwt = await jwtgenratorandverifier.VerifyAndGenerateToken(request, user);
+                var generatedjwt = await jwtgenratorandverifier.VerifyAndGenerateToken(request);
                 if (generatedjwt.Success == false)
                 {
                     return false;

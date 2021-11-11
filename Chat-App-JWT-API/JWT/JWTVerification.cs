@@ -27,7 +27,7 @@ namespace Chat_App_JWT_API.JWT
             _tokenGenerator = new JWTTokens(_jwtConfig, databaseSingleton);
             _tokenValidationParams = tokenValidationParameters;
         }
-        public async Task<AuthResult> VerifyAndGenerateToken(TokenRequest tokenRequest, User user)
+        public async Task<AuthResult> VerifyAndGenerateToken(TokenRequest tokenRequest)
         {
             var JwtTokenHandler = new JwtSecurityTokenHandler();
             try

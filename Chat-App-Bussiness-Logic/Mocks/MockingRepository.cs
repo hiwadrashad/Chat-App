@@ -16,7 +16,9 @@ namespace Chat_App_Logic.Mocks
                 Email = "user@example.com",
                 Id = 0,
                 Name = "string",
-                Password = "string",
+                AttemptedPassword = "password",
+                Salt = "SALT",
+                HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
                 Role = Chat_App_Library.Enums.Role.Admin,
                 Username = "string"
 
@@ -25,8 +27,9 @@ namespace Chat_App_Logic.Mocks
                 Email = "test",
                 Id = 1,
                 Name = "test",
-                Password = "test",
-                Role = Chat_App_Library.Enums.Role.Admin,
+                AttemptedPassword = "password",
+                Salt = "SALT",
+                HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
                 Username = "test"            
                 
               }
@@ -42,7 +45,9 @@ namespace Chat_App_Logic.Mocks
                 Email = "test",
                 Id = 1,
                 Name = "test",
-                Password = "test",
+                AttemptedPassword = "password",
+                Salt = "SALT",
+                HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
                 Role = Chat_App_Library.Enums.Role.Admin,
                 Username = "test"
 
@@ -63,7 +68,9 @@ namespace Chat_App_Logic.Mocks
                 Email = "test",
                 Id = 1,
                 Name = "test",
-                Password = "test",
+                AttemptedPassword = "password",
+                Salt = "SALT",
+                HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
                 Role = Chat_App_Library.Enums.Role.Admin,
                 Username = "test"
 
@@ -91,7 +98,9 @@ namespace Chat_App_Logic.Mocks
                 Email = "test",
                 Id = 1,
                 Name = "test",
-                Password = "test",
+                AttemptedPassword = "password",
+                Salt = "SALT",
+                HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
                 Role = Chat_App_Library.Enums.Role.Admin,
                 Username = "test"
 
@@ -120,7 +129,9 @@ namespace Chat_App_Logic.Mocks
                       Email = "test",
                       Id = 1,
                       Name = "test",
-                      Password = "test",
+                      AttemptedPassword = "password",
+                      Salt = "SALT",
+                HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
                       Role = Chat_App_Library.Enums.Role.Admin,
                       Username = "test"
 
@@ -142,7 +153,9 @@ namespace Chat_App_Logic.Mocks
                 Email = "test",
                 Id = 1,
                 Name = "test",
-                Password = "test",
+                AttemptedPassword = "password",
+                Salt = "SALT",
+                HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
                 Role = Chat_App_Library.Enums.Role.Admin,
                 Username = "test"
 
@@ -187,6 +200,7 @@ namespace Chat_App_Logic.Mocks
         }
         public void AddUser(User user)
         {
+            
             _users.Add(user);
         }
 
@@ -263,7 +277,9 @@ namespace Chat_App_Logic.Mocks
             {
                 user.Email = userupdate.Email;
                 user.Name = userupdate.Name;
-                user.Password = userupdate.Password;
+                user.AttemptedPassword = userupdate.AttemptedPassword;
+                user.Salt = userupdate.Salt;
+                user.HashBase64 = userupdate.HashBase64;
                 user.Role = userupdate.Role;
                 user.Username = userupdate.Username;
             }

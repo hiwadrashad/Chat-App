@@ -161,7 +161,9 @@ namespace Chat_App_Logic.Repositories
             {
                 user.Email = userupdate.Email;
                 user.Name = userupdate.Name;
-                user.Password = userupdate.Password;
+                user.AttemptedPassword = userupdate.AttemptedPassword;
+                user.HashBase64 = userupdate.HashBase64;
+                user.Salt = userupdate.Salt;
                 user.Role = userupdate.Role;
                 user.Username = userupdate.Username;
             }
