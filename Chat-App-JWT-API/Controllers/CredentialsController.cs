@@ -43,7 +43,6 @@ namespace Chat_App__JWT_API.Controllers
         {
             if (ModelState.IsValid)
             {
-                var test = teststaticclass.tempvalue;
 
                 var testtoken = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
@@ -80,12 +79,12 @@ namespace Chat_App__JWT_API.Controllers
             if (ModelState.IsValid)
             {
                 var existingUsers = _databaseSingleton.GetRepository().GetUsers();
-                teststaticclass.tempvalue = "somevalue";
                 if (existingUsers.Any(a => a.Id == input.Id))
                 {
                     var jwtToken = await _tokenGenerator.GenerateJwtToken(input);
                     //HttpContext.Request.Headers["Authorization"] = jwtToken;
                     var testtoken = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+                    AuthResultSingleton.GetSingleton().SetAuth(jwtToken);
                     return Ok(jwtToken);
                 }
                 else
@@ -117,21 +116,21 @@ namespace Chat_App__JWT_API.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _jwtVerification.VerifyAndGenerateToken(tokenRequest);
+                //var result = await _jwtVerification.VerifyAndGenerateToken(tokenRequest);
 
-                if (result == null)
-                {
+                //if (result == null)
+                //{
 
-                    return BadRequest(new RegistrationResponse()
-                    {
-                        Errors = new List<string>() {
-                        "Invalid tokens"
-                    },
-                        Success = false
-                    });
-                }
+                //    return BadRequest(new RegistrationResponse()
+                //    {
+                //        Errors = new List<string>() {
+                //        "Invalid tokens"
+                //    },
+                //        Success = false
+                //    });
+                //}
 
-                return Ok(result);
+                //return Ok(result);
             }
 
             return BadRequest(new RegistrationResponse()

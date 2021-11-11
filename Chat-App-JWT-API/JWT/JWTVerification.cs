@@ -27,10 +27,9 @@ namespace Chat_App_JWT_API.JWT
             _tokenGenerator = new JWTTokens(_jwtConfig, databaseSingleton);
             _tokenValidationParams = tokenValidationParameters;
         }
-        public async Task<AuthResult> VerifyAndGenerateToken(TokenRequest tokenRequest)
+        public async Task<AuthResult> VerifyAndGenerateToken(TokenRequest tokenRequest, User user)
         {
             var JwtTokenHandler = new JwtSecurityTokenHandler();
-
             try
             {
                 var tokenInVerification = JwtTokenHandler.ValidateToken(tokenRequest.Token, _tokenValidationParams, out var validatedToken);
@@ -50,18 +49,18 @@ namespace Chat_App_JWT_API.JWT
                 var expiryDate = Chat_App_Bussiness_Logic.Conversions.
                     DateTimeConversion.UnixTimeStampToDateTime(utcExpiryDate);
 
-                if (expiryDate > DateTime.UtcNow) {
+                if (expiryDate < DateTime.Now) {
                     return new AuthResult()
                     {
                         Success = false,
                         Errors = new List<string>() {
-                             "Token has not yet expired"
+                             "Still Logged in"
                         }
                     };
                 }
 
                 var storedToken = _databaseSingleton.GetRepository()
-                    .GetAllRefreshTokens().FirstOrDefault(a => a.Token == tokenRequest.Token);
+                    .GetAllRefreshTokens().FirstOrDefault(a => a.Token == tokenRequest.RefreshToken);
 
                 if (storedToken == null)
                 {
@@ -74,16 +73,16 @@ namespace Chat_App_JWT_API.JWT
                     };
                 }
 
-                if (storedToken.IsUsed)
-                {
-                    return new AuthResult()
-                    {
-                        Success = false,
-                        Errors = new List<string>() {
-                             "Token has been used"
-                        }
-                    };
-                }
+                //if (storedToken.IsUsed)
+                //{
+                //    return new AuthResult()
+                //    {
+                //        Success = false,
+                //        Errors = new List<string>() {
+                //             "Token has been used"
+                //        }
+                //    };
+                //}
 
                 if (storedToken.IsRevoked)
                 {
@@ -96,19 +95,19 @@ namespace Chat_App_JWT_API.JWT
                     };
                 }
 
-                var jti = tokenInVerification.Claims.FirstOrDefault(a => a.Type
-                 == JwtRegisteredClaimNames.Jti).Value;
+                //var jti = tokenInVerification.Claims.FirstOrDefault(a => a.Type
+                // == JwtRegisteredClaimNames.Jti).Value;
 
-                if (storedToken.jwtId != jti)
-                {
-                    return new AuthResult()
-                    {
-                        Success = false,
-                        Errors = new List<string>() {
-                             "Token doesn't match"
-                        }
-                    };
-                }
+                //if (storedToken.jwtId != jti)
+                //{
+                //    return new AuthResult()
+                //    {
+                //        Success = false,
+                //        Errors = new List<string>() {
+                //             "Token doesn't match"
+                //        }
+                //    };
+                //}
 
                 storedToken.IsUsed = true;
                 _databaseSingleton.GetRepository().UpdateRefreshToken(storedToken);

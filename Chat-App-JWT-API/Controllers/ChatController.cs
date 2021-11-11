@@ -1,4 +1,5 @@
-﻿using Chat_App_Library.Interfaces;
+﻿using Chat_App_JWT_API.Attributes;
+using Chat_App_Library.Interfaces;
 using Chat_App_Library.Models;
 using Chat_App_Library.Singletons;
 using Microsoft.AspNetCore.Mvc;
@@ -22,6 +23,7 @@ namespace Chat_App__JWT_API.Controllers
             _databaseSingleton = databaseSingleton;
             _repo = databaseSingleton.GetRepository();
         }
+        [Authorize]
         [HttpGet("api/getmessages")]
         public IEnumerable<Message> GetMessages()
         {

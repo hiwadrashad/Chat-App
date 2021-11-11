@@ -43,7 +43,8 @@ namespace Chat_App_JWT_API.JWT
             };
 
             var token = jwtTokenHandler.CreateToken(tokenDescriptor);
-            var jwtToken = jwtTokenHandler.WriteToken(token);
+            //var jwtToken = jwtTokenHandler.WriteToken(token);
+            var jwtToken = GenerateSimpleJwtToken(user);
 
             var refreshToken = new RefreshToken()
             {
@@ -67,29 +68,31 @@ namespace Chat_App_JWT_API.JWT
         }
 
 
-        //public string GenerateJwtToken(User user)
-        //{
-        //    var jwtTokenHandler = new JwtSecurityTokenHandler();
+        public string GenerateSimpleJwtToken(User user)
+        {
+            var jwtTokenHandler = new JwtSecurityTokenHandler();
 
-        //    var key = Encoding.ASCII.GetBytes(_jwtConfig.Secret);
+            var key = Encoding.ASCII.GetBytes(_jwtConfig.Secret);
 
-        //    var tokenDescriptor = new SecurityTokenDescriptor
-        //    {
-        //        Subject = new System.Security.Claims.ClaimsIdentity(new[] {
-        //            new Claim("Id", user.Id.ToString()),
-        //            new Claim("Username", user.Username),
-        //            new Claim("Email", user.Email),
-        //            new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-        //            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-        //        }),
-        //        Expires = DateTime.UtcNow.AddSeconds(30),
-        //        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-        //    };
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new System.Security.Claims.ClaimsIdentity(new[] {
+                    new Claim("Id", user.Id.ToString()),
+                    new Claim("Username", user.Username),
+                    new Claim("Email", user.Email),
+                    new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim("CreationDate",DateTime.Now.ToString()),
+                    new Claim("ExpirationDate",DateTime.Now.AddSeconds(30).ToString())
+                }),
+                Expires = DateTime.UtcNow.AddSeconds(30),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
 
-        //    var token = jwtTokenHandler.CreateToken(tokenDescriptor);
-        //    var jwtToken = jwtTokenHandler.WriteToken(token);
+            var token = jwtTokenHandler.CreateToken(tokenDescriptor);
+            var jwtToken = jwtTokenHandler.WriteToken(token);
 
-        //    return jwtToken;
-        //}
+            return jwtToken;
+        }
     }
 }
