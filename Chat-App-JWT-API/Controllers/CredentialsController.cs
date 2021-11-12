@@ -86,7 +86,7 @@ namespace Chat_App__JWT_API.Controllers
                 if (existingUsers.Any(a => a.Id == input.Id))
                 {
                     input.HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash(input.AttemptedPassword, input.Salt));
-                    var databaseuser = existingUsers.FirstOrDefault(a => a.Email == a.Email);
+                    var databaseuser = existingUsers.FirstOrDefault(a => a.Email == input.Email && a.Username == input.Username);
                     if (Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.CompareHash(input.AttemptedPassword, databaseuser.HashBase64, input.Salt))
                     {
                         var jwtToken = await _tokenGenerator.GenerateJwtToken(input);
@@ -161,13 +161,18 @@ namespace Chat_App__JWT_API.Controllers
             });
         
         }
+        [HttpGet("api/getusersbyemail/{id}")]
+        public IEnumerable<User> GetUsersByEmail(string id)
+        {
+            return _repo.GetUsers().Where(a => a.Email == id);
+        }
 
         [HttpPost("api/adduser")]
         public void AddUser([FromBody] User input)
         {
             _repo.AddUser(input);
         }
-        [Authorize]
+        //[Authorize]
         [HttpGet("api/getusers")]
         public IEnumerable<User> GetUsers()
         {

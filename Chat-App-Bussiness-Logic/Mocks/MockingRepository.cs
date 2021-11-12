@@ -32,6 +32,16 @@ namespace Chat_App_Logic.Mocks
                 HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
                 Username = "test"            
                 
+              },
+              new User() {
+                Email = "hiwad.rashad@itvitaelearning.nl",
+                Id = 2,
+                Name = "test",
+                AttemptedPassword = "password",
+                Salt = "SALT",
+                HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
+                Username = "test"
+
               }
             };
         private static List<GroupChat> _groupchat = new List<GroupChat>()
