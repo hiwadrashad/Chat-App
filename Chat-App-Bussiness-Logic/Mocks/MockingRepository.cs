@@ -18,6 +18,7 @@ namespace Chat_App_Logic.Mocks
                 Name = "string",
                 AttemptedPassword = "password",
                 Salt = "SALT",
+                Banned = false,
                 HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
                 Role = Chat_App_Library.Enums.Role.Admin,
                 Username = "string"
@@ -29,6 +30,7 @@ namespace Chat_App_Logic.Mocks
                 Name = "test",
                 AttemptedPassword = "password",
                 Salt = "SALT",
+                Banned = false,
                 HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
                 Username = "test"            
                 
@@ -39,6 +41,7 @@ namespace Chat_App_Logic.Mocks
                 Name = "test",
                 AttemptedPassword = "password",
                 Salt = "SALT",
+                Banned = false,
                 HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
                 Username = "test"
 
@@ -57,6 +60,7 @@ namespace Chat_App_Logic.Mocks
                 Name = "test",
                 AttemptedPassword = "password",
                 Salt = "SALT",
+                Banned = false,
                 HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
                 Role = Chat_App_Library.Enums.Role.Admin,
                 Username = "test"
@@ -72,6 +76,10 @@ namespace Chat_App_Logic.Mocks
                  Text = "test",
              }
              },
+               BannedUsers = new List<User>(),
+               MaxAmountPersons = 0,
+               Password = "password",
+               Private = false,
              Users = new List<User>()
              {
                new User() {
@@ -80,6 +88,7 @@ namespace Chat_App_Logic.Mocks
                 Name = "test",
                 AttemptedPassword = "password",
                 Salt = "SALT",
+                Banned = false,
                 HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
                 Role = Chat_App_Library.Enums.Role.Admin,
                 Username = "test"
@@ -96,6 +105,10 @@ namespace Chat_App_Logic.Mocks
                CreationDate = DateTime.Now,
                Id = 1,
                Title = "test",
+               BannedUsers = new List<User>(),
+               MaxAmountPersons = 0,
+               Password = "password",
+               Private = false,
                Messages = new List<Message>()
                {
                        new Message()
@@ -110,6 +123,7 @@ namespace Chat_App_Logic.Mocks
                 Name = "test",
                 AttemptedPassword = "password",
                 Salt = "SALT",
+                Banned = false,
                 HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
                 Role = Chat_App_Library.Enums.Role.Admin,
                 Username = "test"
@@ -127,6 +141,10 @@ namespace Chat_App_Logic.Mocks
                 CreationDate = DateTime.Now,
                 Id = 1,
                 Title = "test",
+                BannedUsers = new List<User>(),
+                MaxAmountPersons = 0,
+                Password = "password",
+                Private = false,
                 Messages = new List<Message>()
                 {
                      new Message()
@@ -141,6 +159,7 @@ namespace Chat_App_Logic.Mocks
                       Name = "test",
                       AttemptedPassword = "password",
                       Salt = "SALT",
+                      Banned = false,
                 HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
                       Role = Chat_App_Library.Enums.Role.Admin,
                       Username = "test"
@@ -165,6 +184,7 @@ namespace Chat_App_Logic.Mocks
                 Name = "test",
                 AttemptedPassword = "password",
                 Salt = "SALT",
+                Banned = false,
                 HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
                 Role = Chat_App_Library.Enums.Role.Admin,
                 Username = "test"
@@ -289,6 +309,7 @@ namespace Chat_App_Logic.Mocks
                 user.Name = userupdate.Name;
                 user.AttemptedPassword = userupdate.AttemptedPassword;
                 user.Salt = userupdate.Salt;
+                user.Banned = false;
                 user.HashBase64 = userupdate.HashBase64;
                 user.Role = userupdate.Role;
                 user.Username = userupdate.Username;
@@ -376,7 +397,7 @@ namespace Chat_App_Logic.Mocks
             Messages.Where(a => a.Id == messageid).FirstOrDefault());
         }
 
-        public void DeleteMessageGeneral(GroupChat chat, int messageid)
+        public void DeleteMessageGeneral(GeneralChat chat, int messageid)
         {
             _generalchat.Where(a => a.Id == chat.Id).FirstOrDefault().
             Messages.Remove(_generalchat.Where(a => a.Id == chat.Id).FirstOrDefault().

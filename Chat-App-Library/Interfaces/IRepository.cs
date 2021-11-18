@@ -37,7 +37,7 @@ namespace Chat_App_Library.Interfaces
         public void DeleteGeneralChat(GeneralChat chat);
         public void DeleteSiglePersonChat(SingleUserChat chat);
         public void DeleteMessageGroup(GroupChat chat, int messageid);
-        public void DeleteMessageGeneral(GroupChat chat, int messageid);
+        public void DeleteMessageGeneral(GeneralChat chat, int messageid);
         public void DeleteMessageSingleUser(SingleUserChat chat, int messageid);
         public void UpdateMessageToGroupChat(Message message, int groupid);
         public void UpdateMessageToSingleUserChat(Message message, int singleuserchatid);

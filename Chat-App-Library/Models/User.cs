@@ -20,5 +20,6 @@ namespace Chat_App_Library.Models
         public string Salt { get; set; }
         public string HashBase64 { get; set; }
         public Role Role { get; set; }
+        public bool Banned { get; set; }
     }
 }

@@ -226,7 +226,7 @@ namespace Chat_App_Logic.Repositories
             _dbContext.SaveChanges();
         }
 
-        public void DeleteMessageGeneral(GroupChat chat, int messageid)
+        public void DeleteMessageGeneral(GeneralChat chat, int messageid)
         {
             _dbContext.GeneralChatDatabase.Where(a => a.Id == chat.Id).FirstOrDefault().
             Messages.Remove(_dbContext.GeneralChatDatabase.Where(a => a.Id == chat.Id).FirstOrDefault().

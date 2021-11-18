@@ -1,3 +1,4 @@
+using Chat_App_Bussiness_Logic.Services;
 using Chat_App_JWT_API.Configuration;
 using Chat_App_JWT_API.Middleware;
 using Chat_App_Library.Interfaces;
@@ -76,6 +77,7 @@ namespace Chat_App_JWT_API
             //timestamp 28:00
 
             services.AddSingleton(typeof(IDatabaseSingleton), DatabaseSingleton.GetSingleton());
+            services.AddSingleton(typeof(IChatService),new ChatService());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

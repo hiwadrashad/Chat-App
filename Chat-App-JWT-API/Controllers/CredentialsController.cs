@@ -4,6 +4,7 @@ using Chat_App_JWT_API.JWT;
 using Chat_App_Library.Interfaces;
 using Chat_App_Library.Models;
 using Chat_App_Library.Singletons;
+using Chat_App_Library.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
@@ -38,6 +39,27 @@ namespace Chat_App__JWT_API.Controllers
             _jwtVerification = new JWTVerification(databaseSingleton, optionsMonitor, tokenValidationParameters);
         }
 
+        [HttpPost("api/makeuseradmin")]
+        public async Task<IActionResult> MakeUserAdmin([FromBody] AscendUserToAdminRequest input)
+        {
+            if (input.RequestingUser.Role != Chat_App_Library.Enums.Role.Admin)
+            {
+                return BadRequest(new RegistrationResponse()
+                {
+                    Errors = new List<string>() {
+                        "User doesn't have necessary privileges"
+                        },
+                    Success = false
+                });
+            }
+            else
+            {
+                input.UserToAscend.Role = Chat_App_Library.Enums.Role.Admin;
+                _databaseSingleton.GetRepository().UpdateUserData(input.UserToAscend);
+                return Ok();
+            }
+        }
+
         [HttpPost("api/register")]
         public async Task<IActionResult> Register([FromBody] User input)
         {
@@ -48,7 +70,7 @@ namespace Chat_App__JWT_API.Controllers
 
                 var existingUsers = _databaseSingleton.GetRepository().GetUsers();
 
-                if (existingUsers.Any(a => a == input))
+                if (existingUsers.Any(a => a.Username == input.Username))
                 {
                     return BadRequest(new RegistrationResponse()
                     {
@@ -93,6 +115,7 @@ namespace Chat_App__JWT_API.Controllers
                         //HttpContext.Request.Headers["Authorization"] = jwtToken;
                         var testtoken = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
                         AuthResultSingleton.GetSingleton().SetAuth(jwtToken);
+                        UserSingleton.GetSingleton().SetUser(input);
                         return Ok(jwtToken);
                     }
                     else
@@ -167,11 +190,6 @@ namespace Chat_App__JWT_API.Controllers
             return _repo.GetUsers().Where(a => a.Email == id);
         }
 
-        [HttpPost("api/adduser")]
-        public void AddUser([FromBody] User input)
-        {
-            _repo.AddUser(input);
-        }
         //[Authorize]
         [HttpGet("api/getusers")]
         public IEnumerable<User> GetUsers()

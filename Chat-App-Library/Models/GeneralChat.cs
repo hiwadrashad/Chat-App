@@ -12,5 +12,9 @@ namespace Chat_App_Library.Models
         public string Title { get; set; }
         public DateTime CreationDate { get; set; }
         public List<Message> Messages { get; set; }
+        public int MaxAmountPersons { get; set; }
+        public string Password { get; set; }
+        public bool Private { get; set; }
+        public List<User> BannedUsers { get; set; }
     }
 }

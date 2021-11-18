@@ -18,16 +18,26 @@ namespace Chat_App__JWT_API.Controllers
     {
         IDatabaseSingleton _databaseSingleton;
         IRepository _repo;
-        public ChatController(IDatabaseSingleton databaseSingleton)
+        IChatService _chatService;
+        public ChatController(IDatabaseSingleton databaseSingleton, IChatService chatservice)
         {
+            _chatService = chatservice;
             _databaseSingleton = databaseSingleton;
             _repo = databaseSingleton.GetRepository();
         }
-        [Authorize]
         [HttpGet("api/getmessages")]
-        public IEnumerable<Message> GetMessages()
+        public async Task<IActionResult> GetMessages()
         {
-            return _repo.GetMessages();
+            var Return = await _chatService.GetMessages();
+            var ReturnConverted = Return as List<Message>;
+            if (ReturnConverted != null)
+            {
+                return Ok(Return);
+            }
+            else
+            {
+                return BadRequest(Return);
+            }
         }
         [HttpGet("api/getmessagesbyuserid/{id}")]
         public IEnumerable<Message> GetMessagesByuserId(int id)
@@ -40,7 +50,7 @@ namespace Chat_App__JWT_API.Controllers
             _repo.DeleteMessageGroup(input, id);
         }
         [HttpPut("api/deletemessagegeneral/{id}")]
-        public void DeleteMessageGeneral(int id, [FromBody] GroupChat input)
+        public void DeleteMessageGeneral(int id, [FromBody] GeneralChat input)
         {
             _repo.DeleteMessageGeneral(input, id);
         }
