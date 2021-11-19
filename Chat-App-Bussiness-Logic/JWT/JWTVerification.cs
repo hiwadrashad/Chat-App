@@ -1,4 +1,4 @@
-﻿using Chat_App_JWT_API.Configuration;
+﻿using Chat_App_Bussiness_Logic.Configuration;
 using Chat_App_Library.Interfaces;
 using Chat_App_Library.Models;
 using Microsoft.Extensions.Options;
@@ -9,7 +9,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Chat_App_JWT_API.JWT
+namespace Chat_App_Bussiness_Logic.JWT
 {
     public class JWTVerification
     {
@@ -73,16 +73,6 @@ namespace Chat_App_JWT_API.JWT
                     };
                 }
 
-                //if (storedToken.IsUsed)
-                //{
-                //    return new AuthResult()
-                //    {
-                //        Success = false,
-                //        Errors = new List<string>() {
-                //             "Token has been used"
-                //        }
-                //    };
-                //}
 
                 if (storedToken.IsRevoked)
                 {
@@ -95,24 +85,10 @@ namespace Chat_App_JWT_API.JWT
                     };
                 }
 
-                //var jti = tokenInVerification.Claims.FirstOrDefault(a => a.Type
-                // == JwtRegisteredClaimNames.Jti).Value;
-
-                //if (storedToken.jwtId != jti)
-                //{
-                //    return new AuthResult()
-                //    {
-                //        Success = false,
-                //        Errors = new List<string>() {
-                //             "Token doesn't match"
-                //        }
-                //    };
-                //}
-
                 storedToken.IsUsed = true;
                 _databaseSingleton.GetRepository().UpdateRefreshToken(storedToken);
 
-                var dbUser =  _databaseSingleton.GetRepository().GetUserById(storedToken.UserId);
+                var dbUser =  _databaseSingleton.GetRepository().GetUserById(a => a.Id == storedToken.UserId);
                 return await _tokenGenerator.GenerateJwtToken(dbUser);
             }
             catch (Exception ex)

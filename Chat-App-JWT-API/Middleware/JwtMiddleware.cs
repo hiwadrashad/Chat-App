@@ -1,5 +1,5 @@
-﻿using Chat_App_JWT_API.Configuration;
-using Chat_App_JWT_API.JWT;
+﻿using Chat_App_Bussiness_Logic.Configuration;
+using Chat_App_Bussiness_Logic.JWT;
 using Chat_App_Library.Interfaces;
 using Chat_App_Library.Models;
 using Chat_App_Library.Singletons;
@@ -81,7 +81,7 @@ namespace Chat_App_JWT_API.Middleware
                 var jwtToken = (JwtSecurityToken)validatedToken;
                 var userId = int.Parse(jwtToken.Claims.First(x => x.Type == "Id").Value);
 
-                var user = userService.GetRepository().GetUserById(userId);
+                var user = userService.GetRepository().GetUserById(a => a.Id == userId);
                 JWTVerification jwtgenratorandverifier = new JWTVerification(userService, _optionsMonitor, _tokenValidationParams);
                 TokenRequest request = new TokenRequest();
                 request.Token = AuthResultSingleton.GetSingleton().GetAuth().Token;
@@ -121,7 +121,7 @@ namespace Chat_App_JWT_API.Middleware
                 var jwtToken = (JwtSecurityToken)validatedToken;
                 var userId = int.Parse(jwtToken.Claims.First(x => x.Type == "Id").Value);
 
-                context.Items["User"] = userService.GetRepository().GetUserById(userId);
+                context.Items["User"] = userService.GetRepository().GetUserById(a => a.Id == userId);
                 return true;
             }
             catch

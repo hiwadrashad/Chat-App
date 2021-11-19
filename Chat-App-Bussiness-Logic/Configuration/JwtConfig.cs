@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Chat_App_JWT_API.Configuration
+namespace Chat_App_Bussiness_Logic.Configuration
 {
     public class JwtConfig
     {

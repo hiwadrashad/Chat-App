@@ -56,13 +56,13 @@ namespace Chat_App__JWT_API.Controllers
         [HttpGet("api/getgroupchatsbyuserid/{id}")]
         public IEnumerable<GroupChat> GetGroupChatsByUserId(int id)
         {
-            return _repo.GetGroupChatsByUserId(id);
+            return _repo.GetGroupChatsByUserId(a => a.Users.All(a => a.Id == id) || a.GroupOwner.Id == id);
         }
 
         [HttpGet("api/getsingleuserchatbyuserid/{id}")]
         public IEnumerable<SingleUserChat> GetSingleUserChatByUserId(int id)
         {
-            return _repo.GetSingleUserChatByUserId(id);
+            return _repo.GetSingleUserChatByUserId(a => a.OriginUser.Id == id || a.RecipientUser.Id == id);
         }
         [HttpGet("api/getgroupschat")]
         public IEnumerable<GroupChat> GetGroupsChat()

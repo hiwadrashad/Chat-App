@@ -1,6 +1,6 @@
 ﻿using Chat_App_JWT_API.Attributes;
-using Chat_App_JWT_API.Configuration;
-using Chat_App_JWT_API.JWT;
+using Chat_App_Bussiness_Logic.Configuration;
+using Chat_App_Bussiness_Logic.JWT;
 using Chat_App_Library.Interfaces;
 using Chat_App_Library.Models;
 using Chat_App_Library.Singletons;
@@ -28,6 +28,7 @@ namespace Chat_App__JWT_API.Controllers
         private JWTTokens _tokenGenerator;
         private readonly TokenValidationParameters _tokenValidationParams;
         private readonly JWTVerification _jwtVerification;
+        private readonly Chat_App_Bussiness_Logic.Services.CredentialsService _credentialService;
         public CredentialsController(IDatabaseSingleton databaseSingleton, IOptionsMonitor<JwtConfig> optionsMonitor, 
             TokenValidationParameters tokenValidationParameters)
         {
@@ -37,6 +38,7 @@ namespace Chat_App__JWT_API.Controllers
             _tokenGenerator = new JWTTokens(_jwtConfig, databaseSingleton);
             _tokenValidationParams = tokenValidationParameters;
             _jwtVerification = new JWTVerification(databaseSingleton, optionsMonitor, tokenValidationParameters);
+            _credentialService = new Chat_App_Bussiness_Logic.Services.CredentialsService(_databaseSingleton, optionsMonitor, tokenValidationParameters);
         }
 
         [HttpPost("api/makeuseradmin")]
@@ -114,9 +116,18 @@ namespace Chat_App__JWT_API.Controllers
                         var jwtToken = await _tokenGenerator.GenerateJwtToken(input);
                         //HttpContext.Request.Headers["Authorization"] = jwtToken;
                         var testtoken = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-                        AuthResultSingleton.GetSingleton().SetAuth(jwtToken);
-                        UserSingleton.GetSingleton().SetUser(input);
-                        return Ok(jwtToken);
+
+                        var Return = await _credentialService.Login(input, jwtToken);
+                        var ReturnConverted = Return as string;
+                        if (ReturnConverted != null)
+                        {
+                            return Ok(jwtToken);
+                        }
+                        else
+                        {
+                            return BadRequest(Return);
+                        }
+
                     }
                     else
                     {
@@ -200,13 +211,13 @@ namespace Chat_App__JWT_API.Controllers
 #nullable enable
         public User? GetUserById(int id)
         {
-            return _repo.GetUserById(id);
+            return _repo.GetUserById(a => a.Id == id);
         }
 #nullable disable
         [HttpGet("api/getusersbyname/{id}")]
         public IEnumerable<User> GetUsersByName(string id)
         {
-            return _repo.GetUserByName(id);
+            return _repo.GetUserByName(a => a.Name == id);
         }
 
         [HttpPost("api/updateuserdata")]

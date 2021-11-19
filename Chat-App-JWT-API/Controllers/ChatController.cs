@@ -25,10 +25,10 @@ namespace Chat_App__JWT_API.Controllers
             _databaseSingleton = databaseSingleton;
             _repo = databaseSingleton.GetRepository();
         }
-        [HttpGet("api/getmessages")]
-        public async Task<IActionResult> GetMessages()
+        [HttpGet("api/getmessages/{id}")]
+        public async Task<IActionResult> GetMessages(int id)
         {
-            var Return = await _chatService.GetMessages();
+            var Return = await _chatService.GetMessages(a => a.Id == id);
             var ReturnConverted = Return as List<Message>;
             if (ReturnConverted != null)
             {
@@ -42,7 +42,7 @@ namespace Chat_App__JWT_API.Controllers
         [HttpGet("api/getmessagesbyuserid/{id}")]
         public IEnumerable<Message> GetMessagesByuserId(int id)
         {
-            return _repo.GetMessagesByUserId(id);
+            return _repo.GetMessagesByUserId(a => a.User.Id == id);
         }
         [HttpPut("api/deletemessagegroup/{id}")]
         public void DeleteMessageGroup(int id, [FromBody] GroupChat input)
@@ -78,18 +78,18 @@ namespace Chat_App__JWT_API.Controllers
         [HttpPut("api/addmessagetogroupchat/{id}")]
         public void AddMessageToGroupChat(int id, [FromBody] Message input)
         {
-            _repo.AddMessageToGroupChat(input, id);
+            _repo.AddMessageToGroupChat(input, a => a.Id == id);
         }
 
         [HttpPut("api/addmessagetosingleuserchat/{id}")]
         public void AddMessageToSingleUserChat(int id, [FromBody] Message input)
         {
-            _repo.AddMessageToSingleUserChat(input, id);
+            _repo.AddMessageToSingleUserChat(input, a => a.Id == id);
         }
         [HttpPut("api/addmessagetogeneralchat/{id}")]
         public void AddMessageToGeneralChat(int id, [FromBody] Message input)
         {
-            _repo.AddMessageToGeneralChat(input, id);
+            _repo.AddMessageToGeneralChat(input, a => a.Id == id);
         }
     }
 }

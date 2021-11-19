@@ -4,6 +4,7 @@ using Chat_App_Library.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -127,31 +128,34 @@ namespace Chat_App_Logic.Repositories
             return _dbContext.MessageDatabase.ToList();
         }
 
-        public List<Message> GetMessagesByUserId(int id)
+        public List<Message> GetMessagesByUserId(Expression<Func<Message, bool>> id)
         {
-            return _dbContext.MessageDatabase.Where(a => a.User.Id == id).ToList();
+            IQueryable<Message> query = _dbContext.MessageDatabase as IQueryable<Message>;
+            return query.Where(id).ToList();
         }
 #nullable enable
-        public User? GetUserById(int id)
+        public User? GetUserById(Expression<Func<User, bool>> id)
         {
-            return _dbContext.UserDatabase.Where(a => a.Id == id).FirstOrDefault();
+            IQueryable<User> query = _dbContext.UserDatabase.AsQueryable();
+            return query.Where(id).FirstOrDefault();
         }
 
-        public List<User> GetUserByName(string name)
+        public List<User> GetUserByName(Expression<Func<User, bool>> name)
         {
-            return _dbContext.UserDatabase.Where(a => a.Name == name).ToList();
+            IQueryable<User> query = _dbContext.UserDatabase.AsQueryable();
+            return query.Where(name).ToList();
         }
 
-        public List<GroupChat> GetGroupChatsByUserId(int id)
+        public List<GroupChat> GetGroupChatsByUserId(Expression<Func<GroupChat, bool>> id)
         {
-            return _dbContext.GroupChatDatabase.Where(a => a.Users.All(a => a.Id == id) ||
-            a.GroupOwner.Id == id).ToList();
+            IQueryable<GroupChat> query = _dbContext.GroupChatDatabase.AsQueryable();
+            return query.Where(id).ToList();
         }
 
-        public List<SingleUserChat> GetSingleUserChatByUserId(int id)
+        public List<SingleUserChat> GetSingleUserChatByUserId(Expression<Func<SingleUserChat, bool>> id)
         {
-            return _dbContext.SingleUserChatDatabase.Where(a => a.OriginUser.Id == id ||
-            a.RecipientUser.Id == id).ToList();
+            IQueryable<SingleUserChat> query = _dbContext.SingleUserChatDatabase.AsQueryable();
+            return query.Where(id).ToList();
         }
 
         public void UpdateUserData(User userupdate)
@@ -171,25 +175,28 @@ namespace Chat_App_Logic.Repositories
         }
 #nullable disable
 
-        public void AddMessageToGroupChat(Message message, int groupid)
+        public void AddMessageToGroupChat(Message message, Expression<Func<GroupChat, bool>> id)
         {
-            _dbContext.GroupChatDatabase.FirstOrDefault(a => a.Id == groupid).Messages.Add(message);
+            IQueryable<GroupChat> query = _dbContext.GroupChatDatabase.AsQueryable();
+            query.FirstOrDefault(id).Messages.Add(message);
             _dbContext.MessageDatabase.Add(message);
             _dbContext.SaveChanges();
         }
 
 
-        public void AddMessageToSingleUserChat(Message message, int singleuserchatid)
+        public void AddMessageToSingleUserChat(Message message, Expression<Func<SingleUserChat, bool>> id)
         {
-            _dbContext.SingleUserChatDatabase.FirstOrDefault(a => a.Id == singleuserchatid)
+            IQueryable<SingleUserChat> query = _dbContext.SingleUserChatDatabase.AsQueryable();
+            query.FirstOrDefault(id)
             .Messages.Add(message);
             _dbContext.MessageDatabase.Add(message);
             _dbContext.SaveChanges();
         }
 
-        public void AddMessageToGeneralChat(Message message, int groupchatid)
+        public void AddMessageToGeneralChat(Message message, Expression<Func<GeneralChat, bool>> id)
         {
-            _dbContext.GeneralChatDatabase.FirstOrDefault(a => a.Id == groupchatid).Messages.Add(message);
+            IQueryable<GeneralChat> query = _dbContext.GeneralChatDatabase.AsQueryable();
+            query.FirstOrDefault(id).Messages.Add(message);
             _dbContext.MessageDatabase.Add(message);
             _dbContext.SaveChanges();
         }
@@ -245,10 +252,10 @@ namespace Chat_App_Logic.Repositories
         public void UpdateMessageToGroupChat(Message message, int groupid)
         {
             var item = _dbContext.GroupChatDatabase.FirstOrDefault(a => a.Id == groupid)
-            .Messages.Where(a => a.Id == groupid).FirstOrDefault();
+            .Messages.Where(a => a.Id == message.Id).FirstOrDefault();
             item.EndDate = DateTime.Now;
             item.Text = message.Text;
-            var item2 = _dbContext.MessageDatabase.FirstOrDefault(a => a.Id == groupid);
+            var item2 = _dbContext.MessageDatabase.FirstOrDefault(a => a.Id == message.Id);
             item2.EndDate = DateTime.Now;
             item2.Text = message.Text;
             _dbContext.SaveChanges();
@@ -258,10 +265,10 @@ namespace Chat_App_Logic.Repositories
         public void UpdateMessageToSingleUserChat(Message message, int singleuserchatid)
         {
             var item = _dbContext.SingleUserChatDatabase.FirstOrDefault(a => a.Id == singleuserchatid)
-            .Messages.Where(a => a.Id == singleuserchatid).FirstOrDefault();
+            .Messages.Where(a => a.Id == message.Id).FirstOrDefault();
             item.EndDate = DateTime.Now;
             item.Text = message.Text;
-            var item2 = _dbContext.MessageDatabase.FirstOrDefault(a => a.Id == singleuserchatid);
+            var item2 = _dbContext.MessageDatabase.FirstOrDefault(a => a.Id == message.Id);
             item2.EndDate = DateTime.Now;
             item2.Text = message.Text;
             _dbContext.SaveChanges();
@@ -270,10 +277,10 @@ namespace Chat_App_Logic.Repositories
         public void UpdateMessageToGeneralChat(Message message, int groupchatid)
         {
             var item = _dbContext.GeneralChatDatabase.FirstOrDefault(a => a.Id == groupchatid)
-            .Messages.Where(a => a.Id == groupchatid).FirstOrDefault();
+            .Messages.Where(a => a.Id == message.Id).FirstOrDefault();
             item.EndDate = DateTime.Now;
             item.Text = message.Text;
-            var item2 = _dbContext.MessageDatabase.FirstOrDefault(a => a.Id == groupchatid);
+            var item2 = _dbContext.MessageDatabase.FirstOrDefault(a => a.Id == message.Id);
             item2.EndDate = DateTime.Now;
             item2.Text = message.Text;
             _dbContext.SaveChanges();

@@ -1,4 +1,4 @@
-﻿using Chat_App_JWT_API.Configuration;
+﻿using Chat_App_Bussiness_Logic.Configuration;
 using Chat_App_Library.Interfaces;
 using Chat_App_Library.Models;
 using Microsoft.Extensions.Options;
@@ -11,7 +11,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chat_App_JWT_API.JWT
+namespace Chat_App_Bussiness_Logic.JWT
 {
     public class JWTTokens
     {

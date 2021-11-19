@@ -1,5 +1,5 @@
 using Chat_App_Bussiness_Logic.Services;
-using Chat_App_JWT_API.Configuration;
+using Chat_App_Bussiness_Logic.Configuration;
 using Chat_App_JWT_API.Middleware;
 using Chat_App_Library.Interfaces;
 using Chat_App_Library.Singletons;
