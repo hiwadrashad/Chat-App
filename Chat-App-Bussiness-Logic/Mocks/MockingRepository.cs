@@ -78,6 +78,7 @@ namespace Chat_App_Logic.Mocks
              }
              },
                BannedUsers = new List<User>(),
+               ChatBanned = false,
                MaxAmountPersons = 0,
                Password = "password",
                Private = false,
@@ -107,6 +108,20 @@ namespace Chat_App_Logic.Mocks
                Id = 1,
                Title = "test",
                BannedUsers = new List<User>(),
+               ChatBanned = false,
+               Owner=
+                          new User() {
+                Email = "user@example.com",
+                Id = 0,
+                Name = "string",
+                AttemptedPassword = "password",
+                Salt = "SALT",
+                Banned = false,
+                HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
+                Role = Chat_App_Library.Enums.Role.Admin,
+                Username = "string"
+
+               },
                MaxAmountPersons = 0,
                Password = "password",
                Private = false,
@@ -143,6 +158,7 @@ namespace Chat_App_Logic.Mocks
                 Id = 1,
                 Title = "test",
                 BannedUsers = new List<User>(),
+                ChatBanned = false,
                 MaxAmountPersons = 0,
                 Password = "password",
                 Private = false,
@@ -419,6 +435,50 @@ namespace Chat_App_Logic.Mocks
             _singleUserChats.Where(a => a.Id == chat.Id).FirstOrDefault().
             Messages.Remove(_singleUserChats.Where(a => a.Id == chat.Id).FirstOrDefault().
             Messages.Where(a => a.Id == messageid).FirstOrDefault());
+        }
+
+        /// <summary>
+        /// V1.2
+        /// </summary>
+   
+        public void BlockUserFromGeneralChat(int UserId, GeneralChat Chat)
+        {
+            var User = _users.Where(a => a.Id == UserId).FirstOrDefault();
+            var ChatToUpdate = _generalchat.Where(a => a.Id == Chat.Id).FirstOrDefault();
+            ChatToUpdate.BannedUsers = Chat.BannedUsers;
+            ChatToUpdate.BannedUsers.Add(User);
+            ChatToUpdate.ChatBanned = Chat.ChatBanned;
+            ChatToUpdate.CreationDate = Chat.CreationDate;
+            ChatToUpdate.Id = Chat.Id;
+            ChatToUpdate.MaxAmountPersons = Chat.MaxAmountPersons;
+            ChatToUpdate.Messages = Chat.Messages;
+            ChatToUpdate.Owner = Chat.Owner;
+            ChatToUpdate.Password = Chat.Password;
+            ChatToUpdate.Private = Chat.Private;
+            ChatToUpdate.Title = Chat.Title;
+        }
+
+        public void BlockUserFromGroupChat(int UserId, GroupChat Chat)
+        {
+            var User = _users.Where(a => a.Id == UserId).FirstOrDefault();
+            var ChatToUpdate = _groupchat.Where(a => a.Id == Chat.Id).FirstOrDefault();
+            ChatToUpdate.BannedUsers = Chat.BannedUsers;
+            ChatToUpdate.BannedUsers.Add(User);
+            ChatToUpdate.ChatBanned = Chat.ChatBanned;
+            ChatToUpdate.CreationDate = Chat.CreationDate;
+            ChatToUpdate.Id = Chat.Id;
+            ChatToUpdate.MaxAmountPersons = Chat.MaxAmountPersons;
+            ChatToUpdate.Messages = Chat.Messages;
+            ChatToUpdate.GroupOwner = Chat.GroupOwner;
+            ChatToUpdate.Password = Chat.Password;
+            ChatToUpdate.Private = Chat.Private;
+            ChatToUpdate.Title = Chat.Title;
+        }
+
+        public void AddUserGroupChat(int UserId, GeneralChat Chat)
+        {
+            var User = _users.Where(a => a.Id == UserId).FirstOrDefault();
+            var ChatToUpdate = _groupchat.Where(a => a.Id == Chat.Id).FirstOrDefault();
         }
     }
 }

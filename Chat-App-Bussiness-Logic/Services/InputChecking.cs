@@ -12,7 +12,7 @@ namespace Chat_App_Bussiness_Logic.Services
 {
     public class InputChecking
     {
-        public bool IsEmailValid(string email)
+        private static bool IsEmailValid(string email)
         {
             string expression = "\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*";
 
@@ -26,7 +26,7 @@ namespace Chat_App_Bussiness_Logic.Services
             return false;
         }
 
-        public bool ContainsSwearWords(List<string> swearwords, string input)
+        public static bool ContainsSwearWords(List<string> swearwords, string input)
         {
 
                 foreach (string badWord in swearwords)
@@ -40,7 +40,7 @@ namespace Chat_App_Bussiness_Logic.Services
         }
         
 
-        public bool ValidUserInput(User user)
+        public static bool ValidUserInput(User user)
         {
             if (DatabaseSingleton.GetSingleton().GetRepository().GetUsers()
                  .Any(a => a.Username == user.Username)

@@ -38,18 +38,18 @@ namespace Chat_App__JWT_API.Controllers
         {
             _repo.AddGeneralChat(input);
         }
-        [HttpPost("api/deletegroup")]
-        public void DeleteGroup(GroupChat input)
+        [HttpPost("api/deletegroup/{requestuserid}")]
+        public void DeleteGroup(int requestuserid,[FromBody]GroupChat input)
         {
             _repo.DeleteGroup(input);
         }
-        [HttpPost("api/deletegeneralchat")]
-        public void DeleteGeneralChat(GeneralChat input)
+        [HttpPost("api/deletegeneralchat/{requestuserid}")]
+        public void DeleteGeneralChat(int requestuserid,[FromBody] GeneralChat input)
         {
             _repo.DeleteGeneralChat(input);
         }
-        [HttpPost("api/deletesinglepersonchat")]
-        public void DeleteSinglePersonChat(SingleUserChat input)
+        [HttpPost("api/deletesinglepersonchat{requestuserid}")]
+        public void DeleteSinglePersonChat(int requestuserid,[FromBody] SingleUserChat input)
         {
             _repo.DeleteSiglePersonChat(input);
         }
@@ -64,18 +64,18 @@ namespace Chat_App__JWT_API.Controllers
         {
             return _repo.GetSingleUserChatByUserId(a => a.OriginUser.Id == id || a.RecipientUser.Id == id);
         }
-        [HttpGet("api/getgroupschat")]
-        public IEnumerable<GroupChat> GetGroupsChat()
+        [HttpGet("api/getgroupschat/{requestuserid}")]
+        public IEnumerable<GroupChat> GetGroupsChat(int requestuserid)
         {
             return _repo.GetGroupChats();
         }
-        [HttpGet("api/getgeneralchat")]
-        public IEnumerable<GeneralChat> GetGeneralChat()
+        [HttpGet("api/getgeneralchat/{requestuserid}")]
+        public IEnumerable<GeneralChat> GetGeneralChat(int requestuserid)
         {
             return _repo.GetGeneralChat();
         }
-        [HttpGet("api/getsingleuserchat")]
-        public IEnumerable<SingleUserChat> GetSingleUserChat()
+        [HttpGet("api/getsingleuserchat/{requestuserid}")]
+        public IEnumerable<SingleUserChat> GetSingleUserChat(int requestuserid)
         {
             return _repo.GetSingleUserChat();
         }

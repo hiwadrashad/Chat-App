@@ -14,6 +14,7 @@ namespace Chat_App_Library.Models
         public List<Message> Messages { get; set; }
         public List<User> Users { get; set; }
         public User GroupOwner { get; set; }
+        public bool ChatBanned { get; set; }
         public int MaxAmountPersons { get; set; }
         public string Password { get; set; }
         public bool Private { get; set; }

@@ -195,27 +195,27 @@ namespace Chat_App__JWT_API.Controllers
             });
         
         }
-        [HttpGet("api/getusersbyemail/{id}")]
-        public IEnumerable<User> GetUsersByEmail(string id)
+        [HttpGet("api/getusersbyemail/{id}/{requestingid}")]
+        public IEnumerable<User> GetUsersByEmail(string id, int requestingid)
         {
             return _repo.GetUsers().Where(a => a.Email == id);
         }
 
         //[Authorize]
-        [HttpGet("api/getusers")]
-        public IEnumerable<User> GetUsers()
+        [HttpGet("api/getusers/{requestingid}")]
+        public IEnumerable<User> GetUsers(int requestingid)
         {
             return _repo.GetUsers();
         }
-        [HttpGet("api/getuserbyid/{id}")]
+        [HttpGet("api/getuserbyid/{id}/{requestingid}")]
 #nullable enable
-        public User? GetUserById(int id)
+        public User? GetUserById(int id, int requestingid)
         {
             return _repo.GetUserById(a => a.Id == id);
         }
 #nullable disable
-        [HttpGet("api/getusersbyname/{id}")]
-        public IEnumerable<User> GetUsersByName(string id)
+        [HttpGet("api/getusersbyname/{id}/{requestingid}")]
+        public IEnumerable<User> GetUsersByName(string id, int requestingid)
         {
             return _repo.GetUserByName(a => a.Name == id);
         }
@@ -226,8 +226,8 @@ namespace Chat_App__JWT_API.Controllers
             _repo.UpdateUserData(input);
         }
 
-        [HttpPost("api/deleteuser")]
-        public void DeleteUser(int id)
+        [HttpPost("api/banuser/{id}//{requestingid}")]
+        public void BanUser(int id, int requestingid)
         {
             _repo.DeleteUser(id);
         }

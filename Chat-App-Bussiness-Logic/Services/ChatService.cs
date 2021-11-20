@@ -32,27 +32,9 @@ namespace Chat_App_Bussiness_Logic.Services
                     };
                 }
                 var Return = await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().GetMessages());
-                if (Return.Count > 0)
-                {
-                    foreach (var item in Return)
-                    {
-                        if (item.User == null)
-                        {
-                            return new RegistrationResponse()
-                            {
-                                Errors = new List<string>() {
-                                "No user found"
-                        },
-                                Success = false
-                            };
-                        }
-                    }
-                }
-                else
-                {
+
                     return Return;
-                }
-                return Return;
+
             }
             catch (Exception ex)
             {
@@ -135,6 +117,16 @@ namespace Chat_App_Bussiness_Logic.Services
                         Success = false
                     };
                 }
+                if (input.ChatBanned == true)
+                {
+                    return new RegistrationResponse()
+                    {
+                        Errors = new List<string>() {
+                        "Chat is removed"
+                        },
+                        Success = false
+                    };
+                }
 
                 if (input.BannedUsers.Contains(User))
                 {
@@ -191,6 +183,16 @@ namespace Chat_App_Bussiness_Logic.Services
                     {
                         Errors = new List<string>() {
                         "User is banned"
+                        },
+                        Success = false
+                    };
+                }
+                if (input.ChatBanned == true)
+                {
+                    return new RegistrationResponse()
+                    {
+                        Errors = new List<string>() {
+                        "Chat is removed"
                         },
                         Success = false
                     };
@@ -254,6 +256,17 @@ namespace Chat_App_Bussiness_Logic.Services
                         Success = false
                     };
                 }
+                if (input.ChatBanned == true)
+                {
+                    return new RegistrationResponse()
+                    {
+                        Errors = new List<string>() {
+                        "Chat is removed"
+                        },
+                        Success = false
+                    };
+                }
+
 
                 if (input.BannedUsers.Contains(User))
                 {
@@ -292,12 +305,33 @@ namespace Chat_App_Bussiness_Logic.Services
             try
             {
                 var Chat = await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().GetGroupChats().Where(a => a.Id == id).FirstOrDefault());
+                if (InputChecking.ContainsSwearWords(Chat_App_Library.Constants.Swear_Word_Collection.GetAllSwearWords(), input.Text))
+                {
+                    return new RegistrationResponse()
+                    {
+                        Errors = new List<string>() {
+                        "Profanity filter picked up censored expression"
+                        },
+                        Success = false
+                    };
+                }
                 if (Chat == null)
                 {
                     return new RegistrationResponse()
                     {
                         Errors = new List<string>() {
                         "Chat doesn't exist anymore"
+                        },
+                        Success = false
+                    };
+                }
+
+                if (Chat.ChatBanned == true)
+                {
+                    return new RegistrationResponse()
+                    {
+                        Errors = new List<string>() {
+                        "Chat is removed"
                         },
                         Success = false
                     };
@@ -377,12 +411,32 @@ namespace Chat_App_Bussiness_Logic.Services
             {
 
                 var Chat = await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().GetSingleUserChat().Where(a => a.Id == id).FirstOrDefault());
+                if (InputChecking.ContainsSwearWords(Chat_App_Library.Constants.Swear_Word_Collection.GetAllSwearWords(), input.Text))
+                {
+                    return new RegistrationResponse()
+                    {
+                        Errors = new List<string>() {
+                        "Profanity filter picked up censored expression"
+                        },
+                        Success = false
+                    };
+                }
                 if (Chat == null)
                 {
                     return new RegistrationResponse()
                     {
                         Errors = new List<string>() {
                         "Chat doesn't exist anymore"
+                        },
+                        Success = false
+                    };
+                }
+                if (Chat.ChatBanned == true)
+                {
+                    return new RegistrationResponse()
+                    {
+                        Errors = new List<string>() {
+                        "Chat is removed"
                         },
                         Success = false
                     };
@@ -451,12 +505,32 @@ namespace Chat_App_Bussiness_Logic.Services
             {
 
                 var Chat = await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().GetGeneralChat().Where(a => a.Id == id).FirstOrDefault());
+                if (InputChecking.ContainsSwearWords(Chat_App_Library.Constants.Swear_Word_Collection.GetAllSwearWords(), input.Text))
+                {
+                    return new RegistrationResponse()
+                    {
+                        Errors = new List<string>() {
+                        "Profanity filter picked up censored expression"
+                        },
+                        Success = false
+                    };
+                }
                 if (Chat == null)
                 {
                     return new RegistrationResponse()
                     {
                         Errors = new List<string>() {
                         "Chat doesn't exist anymore"
+                        },
+                        Success = false
+                    };
+                }
+                if (Chat.ChatBanned == true)
+                {
+                    return new RegistrationResponse()
+                    {
+                        Errors = new List<string>() {
+                        "Chat is removed"
                         },
                         Success = false
                     };
@@ -526,12 +600,32 @@ namespace Chat_App_Bussiness_Logic.Services
 
                 var Chat = await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().GetGroupChats()
                 .Where(a => a.Id == ExpressionConversion.ReturnIntegerExpressionParameter<GroupChat>(id)).FirstOrDefault());
+                if (InputChecking.ContainsSwearWords(Chat_App_Library.Constants.Swear_Word_Collection.GetAllSwearWords(), input.Text))
+                {
+                    return new RegistrationResponse()
+                    {
+                        Errors = new List<string>() {
+                        "Profanity filter picked up censored expression"
+                        },
+                        Success = false
+                    };
+                }
                 if (Chat == null)
                 {
                     return new RegistrationResponse()
                     {
                         Errors = new List<string>() {
                         "Chat doesn't exist anymore"
+                        },
+                        Success = false
+                    };
+                }
+                if (Chat.ChatBanned == true)
+                {
+                    return new RegistrationResponse()
+                    {
+                        Errors = new List<string>() {
+                        "Chat is removed"
                         },
                         Success = false
                     };
@@ -601,12 +695,32 @@ namespace Chat_App_Bussiness_Logic.Services
 
                 var Chat = await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().GetSingleUserChat()
                         .Where(a => a.Id == ExpressionConversion.ReturnIntegerExpressionParameter<SingleUserChat>(id)).FirstOrDefault());
+                if (InputChecking.ContainsSwearWords(Chat_App_Library.Constants.Swear_Word_Collection.GetAllSwearWords(), input.Text))
+                {
+                    return new RegistrationResponse()
+                    {
+                        Errors = new List<string>() {
+                        "Profanity filter picked up censored expression"
+                        },
+                        Success = false
+                    };
+                }
                 if (Chat == null)
                 {
                     return new RegistrationResponse()
                     {
                         Errors = new List<string>() {
                         "Chat doesn't exist anymore"
+                        },
+                        Success = false
+                    };
+                }
+                if (Chat.ChatBanned == true)
+                {
+                    return new RegistrationResponse()
+                    {
+                        Errors = new List<string>() {
+                        "Chat is removed"
                         },
                         Success = false
                     };
@@ -675,12 +789,32 @@ namespace Chat_App_Bussiness_Logic.Services
             {
                 var Chat = await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().GetGeneralChat()
                          .Where(a => a.Id == ExpressionConversion.ReturnIntegerExpressionParameter<GeneralChat>(id)).FirstOrDefault());
+                if (InputChecking.ContainsSwearWords(Chat_App_Library.Constants.Swear_Word_Collection.GetAllSwearWords(), input.Text))
+                {
+                    return new RegistrationResponse()
+                    {
+                        Errors = new List<string>() {
+                        "Profanity filter picked up censored expression"
+                        },
+                        Success = false
+                    };
+                }
                 if (Chat == null)
                 {
                     return new RegistrationResponse()
                     {
                         Errors = new List<string>() {
                         "Chat doesn't exist anymore"
+                        },
+                        Success = false
+                    };
+                }
+                if (Chat.ChatBanned == true)
+                {
+                    return new RegistrationResponse()
+                    {
+                        Errors = new List<string>() {
+                        "Chat is removed"
                         },
                         Success = false
                     };
