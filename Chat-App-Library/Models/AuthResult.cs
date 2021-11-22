@@ -10,6 +10,6 @@ namespace Chat_App_Library.Models
         public string Token { get; set; }
         public string RefreshToken { get; set; }
         public bool Success { get; set; }
-        public List<string> Errors { get; set; }
+        public List<string> Errors { get; set; } = new List<string>();
     }
 }

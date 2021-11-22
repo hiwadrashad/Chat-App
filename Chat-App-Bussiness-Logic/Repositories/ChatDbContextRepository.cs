@@ -165,9 +165,9 @@ namespace Chat_App_Logic.Repositories
             {
                 user.Email = userupdate.Email;
                 user.Name = userupdate.Name;
-                user.AttemptedPassword = userupdate.AttemptedPassword;
                 user.HashBase64 = userupdate.HashBase64;
                 user.Salt = userupdate.Salt;
+                user.Invitations = userupdate.Invitations;
                 user.Role = userupdate.Role;
                 user.Username = userupdate.Username;
             }
@@ -283,6 +283,50 @@ namespace Chat_App_Logic.Repositories
             var item2 = _dbContext.MessageDatabase.FirstOrDefault(a => a.Id == message.Id);
             item2.EndDate = DateTime.Now;
             item2.Text = message.Text;
+            _dbContext.SaveChanges();
+        }
+
+        public void BlockUserFromGeneralChat(int UserId, GeneralChat Chat)
+        {
+            var User = _dbContext.UserDatabase.Where(a => a.Id == UserId).FirstOrDefault();
+            var ChatToUpdate = _dbContext.GeneralChatDatabase.Where(a => a.Id == Chat.Id).FirstOrDefault();
+            ChatToUpdate.BannedUsers = Chat.BannedUsers;
+            ChatToUpdate.BannedUsers.Add(User);
+            ChatToUpdate.ChatBanned = Chat.ChatBanned;
+            ChatToUpdate.CreationDate = Chat.CreationDate;
+            ChatToUpdate.Id = Chat.Id;
+            ChatToUpdate.MaxAmountPersons = Chat.MaxAmountPersons;
+            ChatToUpdate.Messages = Chat.Messages;
+            ChatToUpdate.Owner = Chat.Owner;
+            ChatToUpdate.Password = Chat.Password;
+            ChatToUpdate.Private = Chat.Private;
+            ChatToUpdate.Title = Chat.Title;
+            _dbContext.SaveChanges();
+        }
+
+        public void BlockUserFromGroupChat(int UserId, GroupChat Chat)
+        {
+            var User = _dbContext.UserDatabase.Where(a => a.Id == UserId).FirstOrDefault();
+            var ChatToUpdate = _dbContext.GroupChatDatabase.Where(a => a.Id == Chat.Id).FirstOrDefault();
+            ChatToUpdate.BannedUsers = Chat.BannedUsers;
+            ChatToUpdate.BannedUsers.Add(User);
+            ChatToUpdate.ChatBanned = Chat.ChatBanned;
+            ChatToUpdate.CreationDate = Chat.CreationDate;
+            ChatToUpdate.Id = Chat.Id;
+            ChatToUpdate.MaxAmountPersons = Chat.MaxAmountPersons;
+            ChatToUpdate.Messages = Chat.Messages;
+            ChatToUpdate.GroupOwner = Chat.GroupOwner;
+            ChatToUpdate.HashBase64 = Chat.HashBase64;
+            ChatToUpdate.Private = Chat.Private;
+            ChatToUpdate.Title = Chat.Title;
+            _dbContext.SaveChanges();
+        }
+
+        public void AddUserToGroupChat(int UserId, GroupChat Chat)
+        {
+            var User = _dbContext.UserDatabase.Where(a => a.Id == UserId).FirstOrDefault();
+            var ChatToUpdate = _dbContext.GroupChatDatabase.Where(a => a.Id == Chat.Id).FirstOrDefault();
+            ChatToUpdate.Users.Add(User);
             _dbContext.SaveChanges();
         }
     }

@@ -5,12 +5,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Chat_App_Library.Extension_Methods;
 
 namespace Chat_App_Bussiness_Logic.Services
 {
     public class GroupService
     {
-        public async Task<object> AddGroupChat(GroupChat input)
+        public async Task<object> AddGroupChat(string password,GroupChat input)
         {
             try
             {
@@ -37,7 +38,7 @@ namespace Chat_App_Bussiness_Logic.Services
                     };
                 }
                 if (InputChecking.ContainsSwearWords(Chat_App_Library.Constants.Swear_Word_Collection.GetAllSwearWords(), input.Title) ||
-                    InputChecking.ContainsSwearWords(Chat_App_Library.Constants.Swear_Word_Collection.GetAllSwearWords(), input.Password))
+                    InputChecking.ContainsSwearWords(Chat_App_Library.Constants.Swear_Word_Collection.GetAllSwearWords(), password))
                 {
                     return new RegistrationResponse()
                     {
@@ -60,7 +61,21 @@ namespace Chat_App_Bussiness_Logic.Services
                 }
 
                 // add messages in inbox in  v1.2
-
+                if (input.Private == true)
+                {
+                    if (password.IsNullOrWhiteSpace())
+                    {
+                        return new RegistrationResponse()
+                        {
+                            Errors = new List<string>() {
+                        "Please give a valid password"
+                        },
+                            Success = false
+                        };
+                    }
+                    input.HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash(
+                    password, Chat_App_Library.Constants.Salts.Saltvalue));
+                }
                 await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().AddGroupChat(input));
                 return new RegistrationResponse()
                 {
@@ -82,7 +97,7 @@ namespace Chat_App_Bussiness_Logic.Services
             }
         }
 
-        public async Task<object> AddSingleUserChat(SingleUserChat input)
+        public async Task<object> AddSingleUserChat(string password,SingleUserChat input)
         {
             try
             {
@@ -109,7 +124,7 @@ namespace Chat_App_Bussiness_Logic.Services
                     };
                 }
                 if (InputChecking.ContainsSwearWords(Chat_App_Library.Constants.Swear_Word_Collection.GetAllSwearWords(), input.Title) ||
-                    InputChecking.ContainsSwearWords(Chat_App_Library.Constants.Swear_Word_Collection.GetAllSwearWords(), input.Password))
+                    InputChecking.ContainsSwearWords(Chat_App_Library.Constants.Swear_Word_Collection.GetAllSwearWords(), password))
                 {
                     return new RegistrationResponse()
                     {
@@ -132,7 +147,21 @@ namespace Chat_App_Bussiness_Logic.Services
                 }
 
                 // add messages in inbox in  v1.2
-
+                if (input.Private == true)
+                {
+                    if (password.IsNullOrWhiteSpace())
+                    {
+                        return new RegistrationResponse()
+                        {
+                            Errors = new List<string>() {
+                        "Please give a valid password"
+                        },
+                            Success = false
+                        };
+                    }
+                    input.HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash(
+                    password, Chat_App_Library.Constants.Salts.Saltvalue));
+                }
                 await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().AddSingleUserChat(input));
                 return new RegistrationResponse()
                 {

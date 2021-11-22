@@ -17,7 +17,6 @@ namespace Chat_App_Database.Builder_Configuration
         {
             builder.ToTable(usertablename);
             builder.HasKey(a => a.Id);
-            builder.Property(a => a.AttemptedPassword).HasMaxLength(contentmaxlength).IsRequired();
             builder.Property(a => a.Email).HasMaxLength(contentmaxlength).IsRequired();
             builder.Property(a => a.Name).HasMaxLength(contentmaxlength).IsRequired();
             builder.Property(a => a.Username).HasMaxLength(contentmaxlength).IsRequired();

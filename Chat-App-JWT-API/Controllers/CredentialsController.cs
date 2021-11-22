@@ -62,8 +62,8 @@ namespace Chat_App__JWT_API.Controllers
             }
         }
 
-        [HttpPost("api/register")]
-        public async Task<IActionResult> Register([FromBody] User input)
+        [HttpPost("api/register/{password}")]
+        public async Task<IActionResult> Register(string password,[FromBody] User input)
         {
             if (ModelState.IsValid)
             {
@@ -84,9 +84,8 @@ namespace Chat_App__JWT_API.Controllers
                 }
                 var jwtToken = await _tokenGenerator.GenerateJwtToken(input);
                 input.Salt = Chat_App_Library.Constants.Salts.Saltvalue;
-                input.HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash(input.
-                AttemptedPassword, Chat_App_Library.Constants.Salts.Saltvalue));
-                input.AttemptedPassword = "";
+                input.HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash(
+                password, Chat_App_Library.Constants.Salts.Saltvalue));
                 _repo.AddUser(input);
                 return Ok(jwtToken);
             }
@@ -100,18 +99,17 @@ namespace Chat_App__JWT_API.Controllers
             });
         }
        
-        [HttpPost("api/login")]
+        [HttpPost("api/login/{password}")]
        
-        public async Task<IActionResult> Login([FromBody] User input)
+        public async Task<IActionResult> Login(string password,[FromBody] User input)
         {
             if (ModelState.IsValid)
             {
                 var existingUsers = _databaseSingleton.GetRepository().GetUsers();
                 if (existingUsers.Any(a => a.Id == input.Id))
                 {
-                    input.HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash(input.AttemptedPassword, input.Salt));
                     var databaseuser = existingUsers.FirstOrDefault(a => a.Email == input.Email && a.Username == input.Username);
-                    if (Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.CompareHash(input.AttemptedPassword, databaseuser.HashBase64, input.Salt))
+                    if (Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.CompareHash(password, databaseuser.HashBase64, input.Salt))
                     {
                         var jwtToken = await _tokenGenerator.GenerateJwtToken(input);
                         //HttpContext.Request.Headers["Authorization"] = jwtToken;
@@ -226,7 +224,7 @@ namespace Chat_App__JWT_API.Controllers
             _repo.UpdateUserData(input);
         }
 
-        [HttpPost("api/banuser/{id}//{requestingid}")]
+        [HttpPost("api/banuser/{id}/{requestingid}")]
         public void BanUser(int id, int requestingid)
         {
             _repo.DeleteUser(id);

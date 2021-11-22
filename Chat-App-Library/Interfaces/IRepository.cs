@@ -43,5 +43,8 @@ namespace Chat_App_Library.Interfaces
         public void UpdateMessageToGroupChat(Message message, int groupid);
         public void UpdateMessageToSingleUserChat(Message message, int singleuserchatid);
         public void UpdateMessageToGeneralChat(Message message, int groupchatid);
+        public void BlockUserFromGeneralChat(int UserId, GeneralChat Chat);
+        public void BlockUserFromGroupChat(int UserId, GroupChat Chat);
+        public void AddUserToGroupChat(int UserId, GroupChat Chat);
     }
 }

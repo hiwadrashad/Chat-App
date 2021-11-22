@@ -1,4 +1,5 @@
-﻿using Chat_App_Library.Interfaces;
+﻿using Chat_App_Library.Enums;
+using Chat_App_Library.Interfaces;
 using Chat_App_Library.Models;
 using System;
 using System.Collections.Generic;
@@ -17,8 +18,18 @@ namespace Chat_App_Logic.Mocks
                 Email = "user@example.com",
                 Id = 0,
                 Name = "string",
-                AttemptedPassword = "password",
                 Salt = "SALT",
+                Invitations = new List<Invitation>()
+                {
+                   new Invitation()
+                   {
+                    Accepted = false,
+                    Seen = false,
+                    DateSend = DateTime.Now,
+                    Id = 0,
+                    Message = "Test"
+                   }
+                },
                 Banned = false,
                 HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
                 Role = Chat_App_Library.Enums.Role.Admin,
@@ -29,8 +40,18 @@ namespace Chat_App_Logic.Mocks
                 Email = "test",
                 Id = 1,
                 Name = "test",
-                AttemptedPassword = "password",
                 Salt = "SALT",
+                     Invitations = new List<Invitation>()
+                {
+                   new Invitation()
+                   {
+                    Accepted = false,
+                    Seen = false,
+                    DateSend = DateTime.Now,
+                    Id = 0,
+                    Message = "Test"
+                   }
+                },
                 Banned = false,
                 HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
                 Username = "test"            
@@ -40,8 +61,18 @@ namespace Chat_App_Logic.Mocks
                 Email = "hiwad.rashad@itvitaelearning.nl",
                 Id = 2,
                 Name = "test",
-                AttemptedPassword = "password",
                 Salt = "SALT",
+                     Invitations = new List<Invitation>()
+                {
+                   new Invitation()
+                   {
+                    Accepted = false,
+                    Seen = false,
+                    DateSend = DateTime.Now,
+                    Id = 0,
+                    Message = "Test"
+                   }
+                },
                 Banned = false,
                 HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
                 Username = "test"
@@ -59,8 +90,18 @@ namespace Chat_App_Logic.Mocks
                 Email = "test",
                 Id = 1,
                 Name = "test",
-                AttemptedPassword = "password",
                 Salt = "SALT",
+                     Invitations = new List<Invitation>()
+                {
+                   new Invitation()
+                   {
+                    Accepted = false,
+                    Seen = false,
+                    DateSend = DateTime.Now,
+                    Id = 0,
+                    Message = "Test"
+                   }
+                },
                 Banned = false,
                 HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
                 Role = Chat_App_Library.Enums.Role.Admin,
@@ -80,7 +121,7 @@ namespace Chat_App_Logic.Mocks
                BannedUsers = new List<User>(),
                ChatBanned = false,
                MaxAmountPersons = 0,
-               Password = "password",
+               HashBase64 = "LynvGw5uWxVFi4bnuNqrWBByLwQFKoMF3XEEtIftGes=",
                Private = false,
              Users = new List<User>()
              {
@@ -88,8 +129,18 @@ namespace Chat_App_Logic.Mocks
                 Email = "test",
                 Id = 1,
                 Name = "test",
-                AttemptedPassword = "password",
                 Salt = "SALT",
+                     Invitations = new List<Invitation>()
+                {
+                   new Invitation()
+                   {
+                    Accepted = false,
+                    Seen = false,
+                    DateSend = DateTime.Now,
+                    Id = 0,
+                    Message = "Test"
+                   }
+                },
                 Banned = false,
                 HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
                 Role = Chat_App_Library.Enums.Role.Admin,
@@ -114,8 +165,18 @@ namespace Chat_App_Logic.Mocks
                 Email = "user@example.com",
                 Id = 0,
                 Name = "string",
-                AttemptedPassword = "password",
                 Salt = "SALT",
+                     Invitations = new List<Invitation>()
+                {
+                   new Invitation()
+                   {
+                    Accepted = false,
+                    Seen = false,
+                    DateSend = DateTime.Now,
+                    Id = 0,
+                    Message = "Test"
+                   }
+                },
                 Banned = false,
                 HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
                 Role = Chat_App_Library.Enums.Role.Admin,
@@ -124,7 +185,6 @@ namespace Chat_App_Logic.Mocks
                },
                MaxAmountPersons = 0,
                Password = "password",
-               Private = false,
                Messages = new List<Message>()
                {
                        new Message()
@@ -137,8 +197,18 @@ namespace Chat_App_Logic.Mocks
                 Email = "test",
                 Id = 1,
                 Name = "test",
-                AttemptedPassword = "password",
                 Salt = "SALT",
+                     Invitations = new List<Invitation>()
+                {
+                   new Invitation()
+                   {
+                    Accepted = false,
+                    Seen = false,
+                    DateSend = DateTime.Now,
+                    Id = 0,
+                    Message = "Test"
+                   }
+                },
                 Banned = false,
                 HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
                 Role = Chat_App_Library.Enums.Role.Admin,
@@ -160,7 +230,7 @@ namespace Chat_App_Logic.Mocks
                 BannedUsers = new List<User>(),
                 ChatBanned = false,
                 MaxAmountPersons = 0,
-                Password = "password",
+                HashBase64 = "LynvGw5uWxVFi4bnuNqrWBByLwQFKoMF3XEEtIftGes=",
                 Private = false,
                 Messages = new List<Message>()
                 {
@@ -174,8 +244,18 @@ namespace Chat_App_Logic.Mocks
                       Email = "test",
                       Id = 1,
                       Name = "test",
-                      AttemptedPassword = "password",
                       Salt = "SALT",
+                           Invitations = new List<Invitation>()
+                {
+                   new Invitation()
+                   {
+                    Accepted = false,
+                    Seen = false,
+                    DateSend = DateTime.Now,
+                    Id = 0,
+                    Message = "Test"
+                   }
+                },
                       Banned = false,
                 HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
                       Role = Chat_App_Library.Enums.Role.Admin,
@@ -199,8 +279,18 @@ namespace Chat_App_Logic.Mocks
                 Email = "test",
                 Id = 1,
                 Name = "test",
-                AttemptedPassword = "password",
                 Salt = "SALT",
+                     Invitations = new List<Invitation>()
+                {
+                   new Invitation()
+                   {
+                    Accepted = false,
+                    Seen = false,
+                    DateSend = DateTime.Now,
+                    Id = 0,
+                    Message = "Test"
+                   }
+                },
                 Banned = false,
                 HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
                 Role = Chat_App_Library.Enums.Role.Admin,
@@ -330,8 +420,8 @@ namespace Chat_App_Logic.Mocks
             {
                 user.Email = userupdate.Email;
                 user.Name = userupdate.Name;
-                user.AttemptedPassword = userupdate.AttemptedPassword;
                 user.Salt = userupdate.Salt;
+                user.Invitations = userupdate.Invitations;
                 user.Banned = false;
                 user.HashBase64 = userupdate.HashBase64;
                 user.Role = userupdate.Role;
@@ -470,15 +560,17 @@ namespace Chat_App_Logic.Mocks
             ChatToUpdate.MaxAmountPersons = Chat.MaxAmountPersons;
             ChatToUpdate.Messages = Chat.Messages;
             ChatToUpdate.GroupOwner = Chat.GroupOwner;
-            ChatToUpdate.Password = Chat.Password;
+            ChatToUpdate.HashBase64 = Chat.HashBase64;
             ChatToUpdate.Private = Chat.Private;
             ChatToUpdate.Title = Chat.Title;
         }
 
-        public void AddUserGroupChat(int UserId, GeneralChat Chat)
+        public void AddUserToGroupChat(int UserId, GroupChat Chat)
         {
             var User = _users.Where(a => a.Id == UserId).FirstOrDefault();
             var ChatToUpdate = _groupchat.Where(a => a.Id == Chat.Id).FirstOrDefault();
+            ChatToUpdate.Users.Add(User);
         }
+
     }
 }

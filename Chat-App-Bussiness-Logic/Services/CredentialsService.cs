@@ -163,7 +163,7 @@ namespace Chat_App_Bussiness_Logic.Services
 
                 }
 
-                if (input.AttemptedPassword.IsNullOrWhiteSpace() || input.Email.IsNullOrWhiteSpace() || input.Name.IsNullOrWhiteSpace() || input.Username.IsNullOrWhiteSpace())
+                if (input.Email.IsNullOrWhiteSpace() || input.Name.IsNullOrWhiteSpace() || input.Username.IsNullOrWhiteSpace())
                 {
                     return new RegistrationResponse()
                     {

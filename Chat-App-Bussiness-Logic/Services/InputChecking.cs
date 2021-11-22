@@ -46,7 +46,7 @@ namespace Chat_App_Bussiness_Logic.Services
                  .Any(a => a.Username == user.Username)
                  || user.Username.IsNullOrWhiteSpace() || IsEmailValid(user.Email) ||
                  ContainsSwearWords(Chat_App_Library.Constants.Swear_Word_Collection.GetAllSwearWords(),
-                 user.Name) || user.AttemptedPassword.IsNullOrWhiteSpace())
+                 user.Name) )
             {
                 return false;
             }
