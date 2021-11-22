@@ -7,6 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Chat_App_Library.Extension_Methods;
+using System.Linq.Expressions;
+using Chat_App_Bussiness_Logic.Conversions;
+
 namespace Chat_App_Bussiness_Logic.Services
 {
     public class InvitationService
@@ -276,6 +279,146 @@ namespace Chat_App_Bussiness_Logic.Services
                         },
                     Success = true
                 };
+            }
+            catch (Exception ex)
+            {
+                return new RegistrationResponse()
+                {
+                    Errors = new List<string>() {
+                        $"Something went wrong {ex.Message}"
+                        },
+                    Success = false
+                };
+            }
+        }
+
+        public async Task<object> GetGroup(Expression<Func<User,bool>> requestinguserid,string password,GroupType grouptype,int groupid)
+        {
+            try
+            {
+                if (grouptype == GroupType.groupchat)
+                {
+                    var Group = await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().GetGroupChats().Where(a => a.Id == groupid).FirstOrDefault());
+                    var User = await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().GetUserById(requestinguserid));
+                    if (Group == null)
+                    {
+                        return new RegistrationResponse()
+                        {
+                            Errors = new List<string>() {
+                            "Group not found"
+                        },
+                            Success = false
+                        };
+                    }
+                    if (User == null)
+                    {
+                        return new RegistrationResponse()
+                        {
+                            Errors = new List<string>() {
+                            "User not found"
+                        },
+                            Success = false
+                        };
+                    }
+                    if (User.Banned == true && User.Role != Role.Admin)
+                    {
+                        return new RegistrationResponse()
+                        {
+                            Errors = new List<string>() {
+                            "User is banned"
+                        },
+                            Success = false
+                        };
+                    }
+                    if (Group.BannedUsers.Where(a => a.Id ==
+                    ExpressionConversion.ReturnIntegerExpressionParameter<User>(requestinguserid)).Any() && User.Role != Role.Admin)
+                    {
+                        return new RegistrationResponse()
+                        {
+                            Errors = new List<string>() {
+                            "User is banned"
+                        },
+                            Success = false
+                        };
+
+                    }
+
+                    if (Group.ChatBanned == true)
+                    {
+                        return new RegistrationResponse()
+                        {
+                            Errors = new List<string>() {
+                            "Chat is removed"
+                        },
+                            Success = false
+                        };
+                    }
+
+                    return Group;
+                }
+                if (grouptype == GroupType.singleuserchat)
+                {
+                }
+                if (grouptype == GroupType.generalchat)
+                {
+                    var Group = await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().GetGeneralChat().Where(a => a.Id == groupid).FirstOrDefault());
+                    var User = await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().GetUserById(requestinguserid));
+                    if (Group == null)
+                    {
+                        return new RegistrationResponse()
+                        {
+                            Errors = new List<string>() {
+                            "Group not found"
+                        },
+                            Success = false
+                        };
+                    }
+                    if (User == null)
+                    {
+                        return new RegistrationResponse()
+                        {
+                            Errors = new List<string>() {
+                            "User not found"
+                        },
+                            Success = false
+                        };
+                    }
+                    if (User.Banned == true && User.Role != Role.Admin)
+                    {
+                        return new RegistrationResponse()
+                        {
+                            Errors = new List<string>() {
+                            "User is banned"
+                        },
+                            Success = false
+                        };
+                    }
+                    if (Group.BannedUsers.Where(a => a.Id ==
+                    ExpressionConversion.ReturnIntegerExpressionParameter<User>(requestinguserid)).Any() && User.Role != Role.Admin)
+                    {
+                        return new RegistrationResponse()
+                        {
+                            Errors = new List<string>() {
+                            "User is banned"
+                        },
+                            Success = false
+                        };
+
+                    }
+
+                    if (Group.ChatBanned == true)
+                    {
+                        return new RegistrationResponse()
+                        {
+                            Errors = new List<string>() {
+                            "Chat is removed"
+                        },
+                            Success = false
+                        };
+                    }
+
+                    return Group;
+                }
             }
             catch (Exception ex)
             {
