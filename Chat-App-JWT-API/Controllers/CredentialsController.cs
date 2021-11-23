@@ -28,9 +28,9 @@ namespace Chat_App__JWT_API.Controllers
         private JWTTokens _tokenGenerator;
         private readonly TokenValidationParameters _tokenValidationParams;
         private readonly JWTVerification _jwtVerification;
-        private readonly Chat_App_Bussiness_Logic.Services.CredentialsService _credentialService;
+        private readonly ICredentialsService _credentialService;
         public CredentialsController(IDatabaseSingleton databaseSingleton, IOptionsMonitor<JwtConfig> optionsMonitor, 
-            TokenValidationParameters tokenValidationParameters)
+            TokenValidationParameters tokenValidationParameters, ICredentialsService credentialsService)
         {
             _databaseSingleton = databaseSingleton;
             _repo = databaseSingleton.GetRepository();
@@ -38,7 +38,7 @@ namespace Chat_App__JWT_API.Controllers
             _tokenGenerator = new JWTTokens(_jwtConfig, databaseSingleton);
             _tokenValidationParams = tokenValidationParameters;
             _jwtVerification = new JWTVerification(databaseSingleton, optionsMonitor, tokenValidationParameters);
-            _credentialService = new Chat_App_Bussiness_Logic.Services.CredentialsService(_databaseSingleton, optionsMonitor, tokenValidationParameters);
+            _credentialService = credentialsService;
         }
 
         [HttpPost("api/makeuseradmin")]
@@ -57,8 +57,16 @@ namespace Chat_App__JWT_API.Controllers
             else
             {
                 input.UserToAscend.Role = Chat_App_Library.Enums.Role.Admin;
-                _databaseSingleton.GetRepository().UpdateUserData(input.UserToAscend);
-                return Ok();
+                var Return = await _credentialService.UpdateUserData(input.UserToAscend);
+                var ReturnConverted = Return as RegistrationResponse;
+                if (ReturnConverted.Success == true)
+                {
+                    return Ok(Return);
+                }
+                else
+                {
+                    return BadRequest(Return);
+                }
             }
         }
 
@@ -86,8 +94,16 @@ namespace Chat_App__JWT_API.Controllers
                 input.Salt = Chat_App_Library.Constants.Salts.Saltvalue;
                 input.HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash(
                 password, Chat_App_Library.Constants.Salts.Saltvalue));
-                _repo.AddUser(input);
-                return Ok(jwtToken);
+                var Return = await _credentialService.Register(input);
+                var ReturnConverted = Return as RegistrationResponse;
+                if (ReturnConverted.Success == true)
+                {
+                    return Ok(jwtToken);
+                }
+                else
+                {
+                    return BadRequest(Return);
+                }
             }
 
             return BadRequest(new RegistrationResponse()
@@ -167,21 +183,17 @@ namespace Chat_App__JWT_API.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _jwtVerification.VerifyAndGenerateToken(tokenRequest);
+                var Return = await _credentialService.RefreshToken(tokenRequest);
 
-                if (result == null)
+                var ReturnConverted = Return.GetType() == typeof(AuthResult);
+                if (ReturnConverted == true)
                 {
-
-                    return BadRequest(new RegistrationResponse()
-                    {
-                        Errors = new List<string>() {
-                        "Invalid tokens"
-                    },
-                        Success = false
-                    });
+                    return Ok(Return);
                 }
-
-                return Ok(result);
+                else
+                {
+                    return BadRequest(Return);
+                }
             }
 
             return BadRequest(new RegistrationResponse()
@@ -194,40 +206,102 @@ namespace Chat_App__JWT_API.Controllers
         
         }
         [HttpGet("api/getusersbyemail/{id}/{requestingid}")]
-        public IEnumerable<User> GetUsersByEmail(string id, int requestingid)
+        public async Task<IActionResult> GetUsersByEmail(string id, int requestingid)
         {
-            return _repo.GetUsers().Where(a => a.Email == id);
+            var Return = await _credentialService.GetUsersByEmail(id, requestingid);
+            var ReturnConverted = Return as List<Message>;
+            if (ReturnConverted != null)
+            {
+                return Ok(Return);
+            }
+            else
+            {
+                return BadRequest(Return);
+            }
         }
 
         //[Authorize]
         [HttpGet("api/getusers/{requestingid}")]
-        public IEnumerable<User> GetUsers(int requestingid)
+        public async Task<IActionResult> GetUsers(int requestingid)
         {
-            return _repo.GetUsers();
+            var Return = await _credentialService.GetUsers(requestingid);
+            var ReturnConverted = Return as IEnumerable<User>;
+            if (ReturnConverted != null)
+            {
+                return Ok(Return);
+            }
+            else
+            {
+                return BadRequest(Return);
+            }
         }
         [HttpGet("api/getuserbyid/{id}/{requestingid}")]
 #nullable enable
-        public User? GetUserById(int id, int requestingid)
+        public async Task<IActionResult> GetUserById(int id, int requestingid)
         {
-            return _repo.GetUserById(a => a.Id == id);
+            var Return = await _credentialService.GetUsers(requestingid);
+            var ReturnConverted = Return as User;
+            if (ReturnConverted != null)
+            {
+                return Ok(Return);
+            }
+            else
+            {
+                return BadRequest(Return);
+            }
         }
 #nullable disable
         [HttpGet("api/getusersbyname/{id}/{requestingid}")]
-        public IEnumerable<User> GetUsersByName(string id, int requestingid)
+        public async Task<IActionResult> GetUsersByName(string id, int requestingid)
         {
-            return _repo.GetUserByName(a => a.Name == id);
+            var Return = await _credentialService.GetUsersByEmail(id,requestingid);
+            var ReturnConverted = Return as IEnumerable<User>;
+            if (ReturnConverted != null)
+            {
+                return Ok(Return);
+            }
+            else
+            {
+                return BadRequest(Return);
+            }
         }
 
         [HttpPost("api/updateuserdata")]
-        public void UpdateUserData([FromBody] User input, string placeholder = "placeholder")
+        public async Task<IActionResult> UpdateUserData([FromBody] User input, string placeholder = "placeholder")
         {
-            _repo.UpdateUserData(input);
+            var Return = await _credentialService.UpdateUserData(input);
+            var ReturnConverted = Return as RegistrationResponse;
+            if (ReturnConverted.Success == true)
+            {
+                return Ok(Return);
+            }
+            else
+            {
+                return BadRequest(Return);
+            }
         }
 
         [HttpPost("api/banuser/{id}/{requestingid}")]
-        public void BanUser(int id, int requestingid)
+        public async Task<IActionResult> BanUser(int id, int requestingid)
         {
-            _repo.DeleteUser(id);
+            var Return = await _credentialService.BanUser(id, requestingid);
+            var ReturnConverted = Return as RegistrationResponse;
+            if (ReturnConverted.Success == true)
+            {
+                return Ok(Return);
+            }
+            else
+            {
+                return BadRequest(Return);
+            }
+            if (ReturnConverted != null)
+            {
+                return Ok(Return);
+            }
+            else
+            {
+                return BadRequest(Return);
+            }
         }
     }
 }

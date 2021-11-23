@@ -77,7 +77,11 @@ namespace Chat_App_JWT_API
             //timestamp 28:00
 
             services.AddSingleton(typeof(IDatabaseSingleton), DatabaseSingleton.GetSingleton());
-            services.AddSingleton(typeof(IChatService),new ChatService());
+            services.AddSingleton(typeof(IChatService),new ChatService(DatabaseSingleton.GetSingleton()));
+            services.AddSingleton(typeof(IGroupService), new GroupService(DatabaseSingleton.GetSingleton()));
+            services.AddSingleton(typeof(IInvitationService), new InvitationService(DatabaseSingleton.GetSingleton()));
+            services.AddSingleton<ICredentialsService, CredentialsService>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

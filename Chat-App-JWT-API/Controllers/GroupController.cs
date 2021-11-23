@@ -17,67 +17,168 @@ namespace Chat_App__JWT_API.Controllers
     {
         IDatabaseSingleton _databaseSingleton;
         IRepository _repo;
-        public GroupController(IDatabaseSingleton databaseSingleton)
+        IGroupService _groupService;
+        public GroupController(IDatabaseSingleton databaseSingleton, IGroupService groupService)
         {
             _databaseSingleton = databaseSingleton;
             _repo = databaseSingleton.GetRepository();
+            _groupService = groupService;
         }
 
-        [HttpPost("api/addgroupchat")]
-        public void AddGroupChat([FromBody] GroupChat input)
+        [HttpPost("api/addgroupchat/{password}")]
+        public async Task<IActionResult> AddGroupChat(string password,[FromBody] GroupChat input)
         {
-            _repo.AddGroupChat(input);
+            var Return = await _groupService.AddGroupChat(password,input);
+            var ReturnConverted = Return as RegistrationResponse;
+            if (ReturnConverted.Success == true)
+            {
+                return Ok(Return);
+            }
+            else
+            {
+                return BadRequest(Return);
+            }
         }
-        [HttpPost("api/addsingleuserchat")]
-        public void AddSingleUserChat([FromBody] SingleUserChat input)
+        [HttpPost("api/addsingleuserchat/{password}")]
+        public async Task<IActionResult> AddSingleUserChat(string password,[FromBody] SingleUserChat input)
         {
-            _repo.AddSingleUserChat(input);
+            var Return = await _groupService.AddSingleUserChat(password, input);
+            var ReturnConverted = Return as RegistrationResponse;
+            if (ReturnConverted.Success == true)
+            {
+                return Ok(Return);
+            }
+            else
+            {
+                return BadRequest(Return);
+            }
         }
         [HttpPost("api/addgeneralchat")]
-        public void AddGeneralChat([FromBody] GeneralChat input)
+        public async Task<IActionResult> AddGeneralChat([FromBody] GeneralChat input)
         {
-            _repo.AddGeneralChat(input);
+            var Return = await _groupService.AddGeneralChat(input);
+            var ReturnConverted = Return as RegistrationResponse;
+            if (ReturnConverted.Success == true)
+            {
+                return Ok(Return);
+            }
+            else
+            {
+                return BadRequest(Return);
+            }
         }
         [HttpPost("api/deletegroup/{requestuserid}")]
-        public void DeleteGroup(int requestuserid,[FromBody]GroupChat input)
+        public async Task<IActionResult> DeleteGroup(int requestuserid,[FromBody]GroupChat input)
         {
-            _repo.DeleteGroup(input);
+            var Return = await _groupService.DeleteGroup(requestuserid, input);
+            var ReturnConverted = Return as RegistrationResponse;
+            if (ReturnConverted.Success == true)
+            {
+                return Ok(Return);
+            }
+            else
+            {
+                return BadRequest(Return);
+            }
         }
         [HttpPost("api/deletegeneralchat/{requestuserid}")]
-        public void DeleteGeneralChat(int requestuserid,[FromBody] GeneralChat input)
+        public async Task<IActionResult> DeleteGeneralChat(int requestuserid,[FromBody] GeneralChat input)
         {
-            _repo.DeleteGeneralChat(input);
+            var Return = await _groupService.DeleteGeneralChat(requestuserid, input);
+            var ReturnConverted = Return as RegistrationResponse;
+            if (ReturnConverted.Success == true)
+            {
+                return Ok(Return);
+            }
+            else
+            {
+                return BadRequest(Return);
+            }
         }
         [HttpPost("api/deletesinglepersonchat{requestuserid}")]
-        public void DeleteSinglePersonChat(int requestuserid,[FromBody] SingleUserChat input)
+        public async Task<IActionResult> DeleteSinglePersonChat(int requestuserid,[FromBody] SingleUserChat input)
         {
-            _repo.DeleteSiglePersonChat(input);
+            var Return = await _groupService.DeleteSinglePersonChat(requestuserid, input);
+            var ReturnConverted = Return as RegistrationResponse;
+            if (ReturnConverted.Success == true)
+            {
+                return Ok(Return);
+            }
+            else
+            {
+                return BadRequest(Return);
+            }
         }
         [HttpGet("api/getgroupchatsbyuserid/{id}")]
-        public IEnumerable<GroupChat> GetGroupChatsByUserId(int id)
+        public async Task<IActionResult> GetGroupChatsByUserId(int id)
         {
-            return _repo.GetGroupChatsByUserId(a => a.Users.All(a => a.Id == id) || a.GroupOwner.Id == id);
+            var Return = await _groupService.GetGroupChats(id);
+            var ReturnConverted = Return as IEnumerable<GroupChat>;
+            if (ReturnConverted != null)
+            {
+                return Ok(Return);
+            }
+            else
+            {
+                return BadRequest(Return);
+            }
         }
 
         [HttpGet("api/getsingleuserchatbyuserid/{id}")]
-        public IEnumerable<SingleUserChat> GetSingleUserChatByUserId(int id)
+        public async Task<IActionResult> GetSingleUserChatByUserId(int id)
         {
-            return _repo.GetSingleUserChatByUserId(a => a.OriginUser.Id == id || a.RecipientUser.Id == id);
+            var Return = await _groupService.GetSingleUserChat(id);
+            var ReturnConverted = Return as IEnumerable<SingleUserChat>;
+            if (ReturnConverted != null)
+            {
+                return Ok(Return);
+            }
+            else
+            {
+                return BadRequest(Return);
+            }
         }
         [HttpGet("api/getgroupschat/{requestuserid}")]
-        public IEnumerable<GroupChat> GetGroupsChat(int requestuserid)
+        public async Task<IActionResult> GetGroupsChat(int requestuserid)
         {
-            return _repo.GetGroupChats();
+            var Return = await _groupService.GetGroupChats(requestuserid);
+            var ReturnConverted = Return as List<GroupChat>;
+            if (ReturnConverted != null)
+            {
+                return Ok(Return);
+            }
+            else
+            {
+                return BadRequest(Return);
+            }
         }
         [HttpGet("api/getgeneralchat/{requestuserid}")]
-        public IEnumerable<GeneralChat> GetGeneralChat(int requestuserid)
+        public async Task<IActionResult> GetGeneralChat(int requestuserid)
         {
-            return _repo.GetGeneralChat();
+            var Return = await _groupService.GetGeneralChat(requestuserid);
+            var ReturnConverted = Return as List<GeneralChat>;
+            if (ReturnConverted != null)
+            {
+                return Ok(Return);
+            }
+            else
+            {
+                return BadRequest(Return);
+            }
         }
         [HttpGet("api/getsingleuserchat/{requestuserid}")]
-        public IEnumerable<SingleUserChat> GetSingleUserChat(int requestuserid)
+        public async Task<IActionResult> GetSingleUserChat(int requestuserid)
         {
-            return _repo.GetSingleUserChat();
+            var Return = await _groupService.GetSingleUserChat(requestuserid);
+            var ReturnConverted = Return as List<GeneralChat>;
+            if (ReturnConverted != null)
+            {
+                return Ok(Return);
+            }
+            else
+            {
+                return BadRequest(Return);
+            }
         }
     }
 }

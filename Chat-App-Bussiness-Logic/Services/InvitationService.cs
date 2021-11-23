@@ -9,11 +9,20 @@ using System.Threading.Tasks;
 using Chat_App_Library.Extension_Methods;
 using System.Linq.Expressions;
 using Chat_App_Bussiness_Logic.Conversions;
+using Chat_App_Bussiness_Logic.Logging;
+using Chat_App_Library.Interfaces;
 
 namespace Chat_App_Bussiness_Logic.Services
 {
-    public class InvitationService
+    public class InvitationService : IInvitationService
     {
+        IDatabaseSingleton _databaseSingleton;
+        IRepository _repo;
+        public InvitationService(IDatabaseSingleton databaseSingleton)
+        {
+            _databaseSingleton = databaseSingleton;
+            _repo = databaseSingleton.GetRepository();
+        }
         public async Task<object> SendInvitation(int RecieverId, GroupType Grouptype, int Chatid, Invitation Invitation)
         {
             try
@@ -48,7 +57,7 @@ namespace Chat_App_Bussiness_Logic.Services
                         Success = false
                     };
                 }
-                var User =  await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository()
+                var User =  await Task.Run(() => _repo
                 .GetUsers().Where(a => a.Id == RecieverId).FirstOrDefault());
                 if (User == null)
                 {
@@ -91,6 +100,7 @@ namespace Chat_App_Bussiness_Logic.Services
             }
             catch (Exception ex)
             {
+                ApiLogging.WriteErrorLog($"Error : {ex.Message}");
                 return new RegistrationResponse()
                 {
                     Errors = new List<string>() {
@@ -136,7 +146,7 @@ namespace Chat_App_Bussiness_Logic.Services
                         Success = false
                     };
                 }
-                var User = await Task.Run(()=> DatabaseSingleton.GetSingleton().GetRepository().GetUsers().Where(a => a.Id == RecieverId).FirstOrDefault());
+                var User = await Task.Run(()=> _repo.GetUsers().Where(a => a.Id == RecieverId).FirstOrDefault());
                 if (User == null)
                 {
                     return new RegistrationResponse()
@@ -153,7 +163,7 @@ namespace Chat_App_Bussiness_Logic.Services
                     UserInvitation.Seen = true;
                     UserInvitation.Accepted = true;
 
-                    var Chat = await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().GetGroupChats().Where(a => a.Id == invitation.GroupId).FirstOrDefault());
+                    var Chat = await Task.Run(() => _repo.GetGroupChats().Where(a => a.Id == invitation.GroupId).FirstOrDefault());
                     if (Chat == null)
                     {
                         return new RegistrationResponse()
@@ -191,7 +201,7 @@ namespace Chat_App_Bussiness_Logic.Services
                     UserInvitation.Seen = true;
                     UserInvitation.Accepted = true;
 
-                    var Chat = await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().GetSingleUserChat().Where(a => a.Id == invitation.GroupId).FirstOrDefault());
+                    var Chat = await Task.Run(() => _repo.GetSingleUserChat().Where(a => a.Id == invitation.GroupId).FirstOrDefault());
                     if (Chat == null)
                     {
                         return new RegistrationResponse()
@@ -214,6 +224,8 @@ namespace Chat_App_Bussiness_Logic.Services
             }
             catch (Exception ex)
             {
+                ApiLogging.WriteErrorLog($"Error : {ex.Message}");
+
                 return new RegistrationResponse()
                 {
                     Errors = new List<string>() {
@@ -258,7 +270,7 @@ namespace Chat_App_Bussiness_Logic.Services
                         Success = false
                     };
                 }
-                var User = await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().GetUsers().Where(a => a.Id == RecieverId).FirstOrDefault());
+                var User = await Task.Run(() => _repo.GetUsers().Where(a => a.Id == RecieverId).FirstOrDefault());
                 if (User == null)
                 {
                     return new RegistrationResponse()
@@ -282,6 +294,8 @@ namespace Chat_App_Bussiness_Logic.Services
             }
             catch (Exception ex)
             {
+                ApiLogging.WriteErrorLog($"Error : {ex.Message}");
+
                 return new RegistrationResponse()
                 {
                     Errors = new List<string>() {
@@ -298,8 +312,8 @@ namespace Chat_App_Bussiness_Logic.Services
             {
                 if (grouptype == GroupType.groupchat)
                 {
-                    var Group = await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().GetGroupChats().Where(a => a.Id == groupid).FirstOrDefault());
-                    var User = await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().GetUserById(requestinguserid));
+                    var Group = await Task.Run(() => _repo.GetGroupChats().Where(a => a.Id == groupid).FirstOrDefault());
+                    var User = await Task.Run(() => _repo.GetUserById(requestinguserid));
                     if (Group == null)
                     {
                         return new RegistrationResponse()
@@ -343,7 +357,7 @@ namespace Chat_App_Bussiness_Logic.Services
 
                     }
 
-                    if (Group.ChatBanned == true)
+                    if (Group.ChatBanned == true && User.Role != Role.Admin)
                     {
                         return new RegistrationResponse()
                         {
@@ -353,16 +367,121 @@ namespace Chat_App_Bussiness_Logic.Services
                             Success = false
                         };
                     }
+
+                    if (Group.GroupOwner.Id == User.Id || User.Role == Role.Admin)
+                    {
+                        return Group;
+                    }
+
+                    if (Group.Private == true)
+                    {
+                        if (Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.CompareHash(password, Group.HashBase64, Chat_App_Library.Constants.Salts.Saltvalue))
+                        {
+                            return Group;
+                        }
+                        else
+                        {
+                            return new RegistrationResponse()
+                            {
+                                Errors = new List<string>() {
+                                "Password is incorrect"
+                                },
+                                Success = false
+                            };
+                        }
+                    }
+                   
 
                     return Group;
                 }
                 if (grouptype == GroupType.singleuserchat)
                 {
+                    var Group = await Task.Run(() => _repo.GetSingleUserChat().Where(a => a.Id == groupid).FirstOrDefault());
+                    var User = await Task.Run(() => _repo.GetUserById(requestinguserid));
+                    if (Group == null)
+                    {
+                        return new RegistrationResponse()
+                        {
+                            Errors = new List<string>() {
+                            "Group not found"
+                        },
+                            Success = false
+                        };
+                    }
+                    if (User == null)
+                    {
+                        return new RegistrationResponse()
+                        {
+                            Errors = new List<string>() {
+                            "User not found"
+                        },
+                            Success = false
+                        };
+                    }
+                    if (User.Banned == true && User.Role != Role.Admin)
+                    {
+                        return new RegistrationResponse()
+                        {
+                            Errors = new List<string>() {
+                            "User is banned"
+                        },
+                            Success = false
+                        };
+                    }
+                    if (Group.BannedUsers.Where(a => a.Id ==
+                    ExpressionConversion.ReturnIntegerExpressionParameter<User>(requestinguserid)).Any() && User.Role != Role.Admin)
+                    {
+                        return new RegistrationResponse()
+                        {
+                            Errors = new List<string>() {
+                            "User is banned"
+                        },
+                            Success = false
+                        };
+
+                    }
+
+                    if (Group.ChatBanned == true && User.Role != Role.Admin)
+                    {
+                        return new RegistrationResponse()
+                        {
+                            Errors = new List<string>() {
+                            "Chat is removed"
+                        },
+                            Success = false
+                        };
+                    }
+
+                    if (Group.OriginUser.Id == User.Id || User.Role == Role.Admin)
+                    {
+                        return Group;
+                    }
+
+                    if (Group.Private == true)
+                    {
+                        if (Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.CompareHash(password, Group.HashBase64, Chat_App_Library.Constants.Salts.Saltvalue))
+                        {
+                            return Group;
+                        }
+                        else
+                        {
+                            return new RegistrationResponse()
+                            {
+                                Errors = new List<string>() {
+                                "Password is incorrect"
+                                },
+                                Success = false
+                            };
+                        }
+                    }
+
+
+                    return Group;
                 }
                 if (grouptype == GroupType.generalchat)
                 {
-                    var Group = await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().GetGeneralChat().Where(a => a.Id == groupid).FirstOrDefault());
-                    var User = await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().GetUserById(requestinguserid));
+                    var Group = await Task.Run(() => _repo.GetGeneralChat().Where(a => a.Id == groupid).FirstOrDefault());
+                    var User = await Task.Run(() => _repo.GetUserById(requestinguserid));
                     if (Group == null)
                     {
                         return new RegistrationResponse()
@@ -419,9 +538,20 @@ namespace Chat_App_Bussiness_Logic.Services
 
                     return Group;
                 }
+                else
+                {
+                    return new RegistrationResponse()
+                    {
+                        Errors = new List<string>() {
+                        "No appropriate grouptype chosen"
+                        },
+                        Success = false
+                    };
+                }
             }
             catch (Exception ex)
             {
+                ApiLogging.WriteErrorLog($"Error : {ex.Message}");
                 return new RegistrationResponse()
                 {
                     Errors = new List<string>() {

@@ -6,11 +6,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Chat_App_Library.Extension_Methods;
+using Chat_App_Bussiness_Logic.Logging;
+using Chat_App_Library.Interfaces;
 
 namespace Chat_App_Bussiness_Logic.Services
 {
-    public class GroupService
+    public class GroupService : IGroupService
     {
+        IDatabaseSingleton _databaseSingleton;
+        IRepository _repo;
+        public GroupService(IDatabaseSingleton databaseSingleton)
+        {
+            _databaseSingleton = databaseSingleton;
+            _repo = databaseSingleton.GetRepository();
+        }
         public async Task<object> AddGroupChat(string password,GroupChat input)
         {
             try
@@ -25,7 +34,7 @@ namespace Chat_App_Bussiness_Logic.Services
                         Success = false
                     };
                 }
-                var User = await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().GetUserById(a =>
+                var User = await Task.Run(() => _repo.GetUserById(a =>
                 a.Id == input.GroupOwner.Id));
                 if (User.Role != Chat_App_Library.Enums.Role.Admin && User.Banned == true)
                 {
@@ -76,7 +85,7 @@ namespace Chat_App_Bussiness_Logic.Services
                     input.HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash(
                     password, Chat_App_Library.Constants.Salts.Saltvalue));
                 }
-                await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().AddGroupChat(input));
+                await Task.Run(() => _repo.AddGroupChat(input));
                 return new RegistrationResponse()
                 {
                     Errors = new List<string>() {
@@ -87,6 +96,8 @@ namespace Chat_App_Bussiness_Logic.Services
             }
             catch (Exception ex)
             {
+                ApiLogging.WriteErrorLog($"Error : {ex.Message}");
+
                 return new RegistrationResponse()
                 {
                     Errors = new List<string>() {
@@ -111,7 +122,7 @@ namespace Chat_App_Bussiness_Logic.Services
                         Success = false
                     };
                 }
-                var User = await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().GetUserById(a =>
+                var User = await Task.Run(() => _repo.GetUserById(a =>
                 a.Id == input.OriginUser.Id));
                 if (User.Role != Chat_App_Library.Enums.Role.Admin && User.Banned == true)
                 {
@@ -162,7 +173,7 @@ namespace Chat_App_Bussiness_Logic.Services
                     input.HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash(
                     password, Chat_App_Library.Constants.Salts.Saltvalue));
                 }
-                await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().AddSingleUserChat(input));
+                await Task.Run(() => _repo.AddSingleUserChat(input));
                 return new RegistrationResponse()
                 {
                     Errors = new List<string>() {
@@ -173,6 +184,8 @@ namespace Chat_App_Bussiness_Logic.Services
             }
             catch (Exception ex)
             {
+                ApiLogging.WriteErrorLog($"Error : {ex.Message}");
+
                 return new RegistrationResponse()
                 {
                     Errors = new List<string>() {
@@ -197,7 +210,7 @@ namespace Chat_App_Bussiness_Logic.Services
                         Success = false
                     };
                 }
-                var User = await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().GetUserById(a =>
+                var User = await Task.Run(() => _repo.GetUserById(a =>
                 a.Id == input.Owner.Id));
                 if (User.Role != Chat_App_Library.Enums.Role.Admin && User.Banned == true)
                 {
@@ -244,7 +257,7 @@ namespace Chat_App_Bussiness_Logic.Services
 
                 // add messages in inbox in  v1.2
 
-                await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().AddGeneralChat(input));
+                await Task.Run(() => _repo.AddGeneralChat(input));
                 return new RegistrationResponse()
                 {
                     Errors = new List<string>() {
@@ -255,6 +268,8 @@ namespace Chat_App_Bussiness_Logic.Services
             }
             catch (Exception ex)
             {
+                ApiLogging.WriteErrorLog($"Error : {ex.Message}");
+
                 return new RegistrationResponse()
                 {
                     Errors = new List<string>() {
@@ -269,7 +284,7 @@ namespace Chat_App_Bussiness_Logic.Services
         {
             try
             {
-                var User = await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().GetUserById(a =>
+                var User = await Task.Run(() => _repo.GetUserById(a =>
                 a.Id == requestuserid));
                 if (User == null)
                 {
@@ -313,7 +328,7 @@ namespace Chat_App_Bussiness_Logic.Services
                     };
                 }
 
-                await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().DeleteGroup(input));
+                await Task.Run(() => _repo.DeleteGroup(input));
                 return new RegistrationResponse()
                 {
                     Errors = new List<string>() {
@@ -324,6 +339,8 @@ namespace Chat_App_Bussiness_Logic.Services
             }
             catch (Exception ex)
             {
+                ApiLogging.WriteErrorLog($"Error : {ex.Message}");
+
                 return new RegistrationResponse()
                 {
                     Errors = new List<string>() {
@@ -338,7 +355,7 @@ namespace Chat_App_Bussiness_Logic.Services
         {
             try
             {
-                var User = await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().GetUserById(a =>
+                var User = await Task.Run(() => _repo.GetUserById(a =>
                 a.Id == requestuserid));
                 if (User == null)
                 {
@@ -382,7 +399,7 @@ namespace Chat_App_Bussiness_Logic.Services
                     };
                 }
 
-                await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().DeleteGeneralChat(input));
+                await Task.Run(() => _repo.DeleteGeneralChat(input));
                 return new RegistrationResponse()
                 {
                     Errors = new List<string>() {
@@ -393,6 +410,8 @@ namespace Chat_App_Bussiness_Logic.Services
             }
             catch (Exception ex)
             {
+                ApiLogging.WriteErrorLog($"Error : {ex.Message}");
+
                 return new RegistrationResponse()
                 {
                     Errors = new List<string>() {
@@ -407,7 +426,7 @@ namespace Chat_App_Bussiness_Logic.Services
         {
             try
             {
-                var User = await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().GetUserById(a =>
+                var User = await Task.Run(() => _repo.GetUserById(a =>
                 a.Id == requestuserid));
                 if (User == null)
                 {
@@ -451,7 +470,7 @@ namespace Chat_App_Bussiness_Logic.Services
                     };
                 }
 
-                await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().DeleteSiglePersonChat(input));
+                await Task.Run(() => _repo.DeleteSiglePersonChat(input));
                 return new RegistrationResponse()
                 {
                     Errors = new List<string>() {
@@ -462,6 +481,8 @@ namespace Chat_App_Bussiness_Logic.Services
             }
             catch (Exception ex)
             {
+                ApiLogging.WriteErrorLog($"Error : {ex.Message}");
+
                 return new RegistrationResponse()
                 {
                     Errors = new List<string>() {
@@ -476,7 +497,7 @@ namespace Chat_App_Bussiness_Logic.Services
         {
             try
             {
-                var User = await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().GetUserById(a =>
+                var User = await Task.Run(() => _repo.GetUserById(a =>
                 a.Id == requestuserid));
                 if (User == null)
                 {
@@ -500,20 +521,16 @@ namespace Chat_App_Bussiness_Logic.Services
                     };
                 }
 
-                await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().
+                var Return = await Task.Run(() => _repo.
                 GetGroupChatsByUserId(a => a.Id == requestuserid).Where(a => a.ChatBanned != true)
                 .Where(a => a.BannedUsers.All(a => a.Id != requestuserid)));
 
-                return new RegistrationResponse()
-                {
-                    Errors = new List<string>() {
-                        ""
-                        },
-                    Success = true
-                };
+                return Return;
             }
             catch (Exception ex)
             {
+                ApiLogging.WriteErrorLog($"Error : {ex.Message}");
+
                 return new RegistrationResponse()
                 {
                     Errors = new List<string>() {
@@ -528,7 +545,7 @@ namespace Chat_App_Bussiness_Logic.Services
         {
             try
             {
-                var User = await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().GetUserById(a =>
+                var User = await Task.Run(() => _repo.GetUserById(a =>
                 a.Id == requestuserid));
                 if (User == null)
                 {
@@ -552,20 +569,16 @@ namespace Chat_App_Bussiness_Logic.Services
                     };
                 }
 
-                await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().
+                var Return = await Task.Run(() => _repo.
                 GetSingleUserChatByUserId(a => a.Id == requestuserid).Where(a => a.ChatBanned != true)
                 .Where(a => a.BannedUsers.All(a => a.Id != requestuserid)));
 
-                return new RegistrationResponse()
-                {
-                    Errors = new List<string>() {
-                        ""
-                        },
-                    Success = true
-                };
+                return Return;
             }
             catch (Exception ex)
             {
+                ApiLogging.WriteErrorLog($"Error : {ex.Message}");
+
                 return new RegistrationResponse()
                 {
                     Errors = new List<string>() {
@@ -580,7 +593,7 @@ namespace Chat_App_Bussiness_Logic.Services
         {
             try
             {
-                var User = await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().GetUserById(a =>
+                var User = await Task.Run(() => _repo.GetUserById(a =>
                 a.Id == requestuserid));
                 if (User == null)
                 {
@@ -604,13 +617,15 @@ namespace Chat_App_Bussiness_Logic.Services
                     };
                 }
 
-                var Return = await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().
+                var Return = await Task.Run(() => _repo.
                 GetGroupChats());
 
                 return Return;
             }
             catch (Exception ex)
             {
+                ApiLogging.WriteErrorLog($"Error : {ex.Message}");
+
                 return new RegistrationResponse()
                 {
                     Errors = new List<string>() {
@@ -625,7 +640,7 @@ namespace Chat_App_Bussiness_Logic.Services
         {
             try
             {
-                var User = await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().GetUserById(a =>
+                var User = await Task.Run(() => _repo.GetUserById(a =>
                 a.Id == requestuserid));
                 if (User == null)
                 {
@@ -638,24 +653,16 @@ namespace Chat_App_Bussiness_Logic.Services
                     };
                 }
 
-                if (User.Role != Chat_App_Library.Enums.Role.Admin)
-                {
-                    return new RegistrationResponse()
-                    {
-                        Errors = new List<string>() {
-                        "Only Admins have this privelege"
-                        },
-                        Success = false
-                    };
-                }
 
-                var Return = await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().
+                var Return = await Task.Run(() => _repo.
                 GetGeneralChat());
 
                 return Return;
             }
             catch (Exception ex)
             {
+                ApiLogging.WriteErrorLog($"Error : {ex.Message}");
+
                 return new RegistrationResponse()
                 {
                     Errors = new List<string>() {
@@ -670,7 +677,7 @@ namespace Chat_App_Bussiness_Logic.Services
         {
             try
             {
-                var User = await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().GetUserById(a =>
+                var User = await Task.Run(() => _repo.GetUserById(a =>
                 a.Id == requestuserid));
                 if (User == null)
                 {
@@ -694,13 +701,15 @@ namespace Chat_App_Bussiness_Logic.Services
                     };
                 }
 
-                var Return = await Task.Run(() => DatabaseSingleton.GetSingleton().GetRepository().
+                var Return = await Task.Run(() => _repo.
                 GetGeneralChat());
 
                 return Return;
             }
             catch (Exception ex)
             {
+                ApiLogging.WriteErrorLog($"Error : {ex.Message}");
+
                 return new RegistrationResponse()
                 {
                     Errors = new List<string>() {

@@ -1,4 +1,6 @@
-﻿using Chat_App_Library.Enums;
+﻿using Chat_App_Bussiness_Logic.Services;
+using Chat_App_Library.Enums;
+using Chat_App_Library.Interfaces;
 using Chat_App_Library.Models;
 using Chat_App_Library.Singletons;
 using Microsoft.AspNetCore.Mvc;
@@ -11,39 +13,83 @@ using System.Threading.Tasks;
 
 namespace Chat_App_JWT_API.Controllers
 {
+
+
     [Route("api/[controller]")]
     [ApiController]
     public class InvitationController : ControllerBase
     {
-        // GET: api/<InvitationController>
-
-        [HttpPost("api/addgroupchat/{recieverid}/{grouptype}/{chatid}")]
-        public IActionResult SendInvitation(int recieverid,GroupType grouptype,int chatid, [FromBody] Invitation invitation)
+        private readonly IInvitationService _invitationService;
+        public InvitationController(IInvitationService invitationService)
         {
-                //var User = DatabaseSingleton.GetSingleton().GetRepository().GetUsers().Where(a => a.Id == recieverid).FirstOrDefault();
-                return Ok(grouptype);
-                //invitation.DateSend = DateTime.Now;
-                //if (grouptype == GroupType.groupchat)
-                //{
-                //invitation.Grouptype = GroupType.groupchat;
-                //invitation.GroupId = chatid;
+            _invitationService = invitationService;
+        }
+        // GET: api/<InvitationController
 
-                //}
+        [HttpPost("api/sendinvitation/{recieverid}/{grouptype}/{chatid}")]
+        public async  Task<IActionResult> SendInvitation(int recieverid,GroupType grouptype,int chatid, [FromBody] Invitation invitation)
+        {
+            var Return = await _invitationService.SendInvitation(recieverid,grouptype,chatid,invitation);
+            var ReturnConverted = Return as IEnumerable<SingleUserChat>;
+            if (ReturnConverted != null)
+            {
+                return Ok(Return);
+            }
+            else
+            {
+                return BadRequest(Return);
+            }
 
-                //if (grouptype == GroupType.generalchat)
-                //{
-                //invitation.Grouptype = GroupType.generalchat;
-                //invitation.GroupId = chatid;
+        }
 
-                //}
-                //if (grouptype == GroupType.singleuserchat)
-                //{
-                //invitation.Grouptype = GroupType.singleuserchat;
-                //invitation.GroupId = chatid;
+        [HttpPost("api/acceptinvitation/{recieverid}")]
+        public async Task<IActionResult> AcceptInvitation(int recieverid,[FromBody] Invitation invitation)
+        {
+            var Return = await _invitationService.AcceptInvitation(recieverid,invitation);
+            var ReturnConverted = Return as IEnumerable<SingleUserChat>;
+            if (ReturnConverted != null)
+            {
+                return Ok(Return);
+            }
+            else
+            {
+                return BadRequest(Return);
+            }
 
-                //}
-                //User.Invitations.Add(invitation);
-            
+        }
+
+        [HttpPost("api/declineinvitation/{recieverid}")]
+        public async Task<IActionResult> DeclineInvitation(int recieverid, [FromBody] Invitation invitation)
+        {
+            var Return = await _invitationService.AcceptInvitation(recieverid, invitation);
+            var ReturnConverted = Return as IEnumerable<SingleUserChat>;
+            if (ReturnConverted != null)
+            {
+                return Ok(Return);
+            }
+            else
+            {
+                return BadRequest(Return);
+            }
+        }
+
+        [HttpPost("api/getgroup/{requestinguserid}/{password/{grouptype}/{groupid}}")]
+        public async Task<IActionResult> GetGroup(int requestinguserid,string password,GroupType grouptype,int groupid)
+        {
+            var Return = await _invitationService.GetGroup(a => a.Id == requestinguserid,password,grouptype,groupid);
+            var ReturnConverted1 = Return as SingleUserChat;
+            var ReturnConverted2 = Return as GroupChat;
+            var ReturnConverted3 = Return as GeneralChat;
+
+            if (ReturnConverted1 != null || ReturnConverted2 != null || ReturnConverted3 != null)
+            {
+                return Ok(Return);
+            }
+            else
+            {
+                return BadRequest(Return);
+            }
+
         }
     }
 }
