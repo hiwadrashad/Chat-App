@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Moq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,5 +11,6 @@ namespace Chat_App_Library.Interfaces
     {
         public void SetRepository(IRepository repository);
         public IRepository GetRepository();
+        public void SetMoqRepository(Mock<IRepository> repository);
     }
 }

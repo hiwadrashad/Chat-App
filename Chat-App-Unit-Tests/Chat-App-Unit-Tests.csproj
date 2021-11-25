@@ -28,4 +28,8 @@
     <ProjectReference Include="..\Chat-App-Library\Chat-App-Library.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Logs\" />
+  </ItemGroup>
+
 </Project>

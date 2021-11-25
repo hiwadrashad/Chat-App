@@ -33,10 +33,10 @@ namespace Chat_App_Bussiness_Logic.Services
                 {
                     if (input.Contains(badWord))
                     {
-                    return false;
+                    return true;
                     }
                 }
-                return true; 
+                return false; 
         }
         
 

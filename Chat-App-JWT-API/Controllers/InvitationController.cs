@@ -73,8 +73,8 @@ namespace Chat_App_JWT_API.Controllers
             }
         }
 
-        [HttpPost("api/getgroup/{requestinguserid}/{password/{grouptype}/{groupid}}")]
-        public async Task<IActionResult> GetGroup(int requestinguserid,string password,GroupType grouptype,int groupid)
+        [HttpPost("api/getgroup/{requestinguserid}/{password}/{grouptype}/{groupid}")]
+        public async Task<IActionResult> GetGroup(int requestinguserid, string password, GroupType grouptype, int groupid)
         {
             var Return = await _invitationService.GetGroup(a => a.Id == requestinguserid,password,grouptype,groupid);
             var ReturnConverted1 = Return as SingleUserChat;

@@ -28,8 +28,19 @@ namespace Chat_App_Bussiness_Logic.Services
         {
             try
             {
+                var test = ExpressionConversion.ReturnIntegerExpressionParameter<User>(id);
                 var User = await Task.Run(() => _repo.GetUserById(a =>
                 a.Id == ExpressionConversion.ReturnIntegerExpressionParameter<User>(id)));
+                if (User == null)
+                {
+                    return new RegistrationResponse()
+                    {
+                        Errors = new List<string>() {
+                        "User not found"
+                        },
+                        Success = false
+                    };
+                }
                 if (User.Role != Chat_App_Library.Enums.Role.Admin)
                 {
                     return new RegistrationResponse()
@@ -66,6 +77,17 @@ namespace Chat_App_Bussiness_Logic.Services
 
                 var User = await Task.Run(() => _repo.GetUserById(a => 
                 a.Id == ExpressionConversion.ReturnIntegerExpressionParameter<Message>(id)));
+                if (User == null)
+                {
+                    return new RegistrationResponse()
+                    {
+                        Errors = new List<string>() {
+                        "User not found"
+                        },
+                        Success = false
+                    };
+                }
+
                 if (User.Banned == true)
                 {
                     return new RegistrationResponse()
@@ -119,6 +141,17 @@ namespace Chat_App_Bussiness_Logic.Services
 
                 var User = await Task.Run(() => _repo.GetUserById(a =>
                 a.Id == id));
+                if (User == null)
+                {
+                    return new RegistrationResponse()
+                    {
+                        Errors = new List<string>() {
+                        "User not found"
+                        },
+                        Success = false
+                    };
+                }
+
                 if (User.Banned == true)
                 {
                     return new RegistrationResponse()
@@ -191,6 +224,17 @@ namespace Chat_App_Bussiness_Logic.Services
             {
                 var User = await Task.Run(() => _repo.GetUserById(a =>
                 a.Id == id));
+                if (User == null)
+                {
+                    return new RegistrationResponse()
+                    {
+                        Errors = new List<string>() {
+                        "User not found"
+                        },
+                        Success = false
+                    };
+                }
+
                 if (User.Banned == true)
                 {
                     return new RegistrationResponse()
@@ -252,6 +296,17 @@ namespace Chat_App_Bussiness_Logic.Services
             {
                 var User = await Task.Run(() => _repo.GetUserById(a =>
            a.Id == id));
+                if (User == null)
+                {
+                    return new RegistrationResponse()
+                    {
+                        Errors = new List<string>() {
+                        "User not found"
+                        },
+                        Success = false
+                    };
+                }
+
                 if (User.Banned == true)
                 {
                     return new RegistrationResponse()
