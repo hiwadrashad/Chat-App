@@ -28,14 +28,21 @@ namespace Chat_App_Bussiness_Logic.Services
 
         public static bool ContainsSwearWords(List<string> swearwords, string input)
         {
+            List<string> splitinput = input.Split(new Char[] {',','\n',' ','.',':'
+                ,'/',@"\".ToCharArray()[0],'~','!','@','#','$','%','^','&','*'
+                ,'(',')','-','_','+','=','{','}','[',']','|',';'
+                ,'"',"'".ToCharArray()[0],'<','>','?' }).ToList();
 
+            foreach(var splitinputword in splitinput)
+            {
                 foreach (string badWord in swearwords)
                 {
-                    if (input.Contains(badWord))
+                    if (badWord == splitinputword)
                     {
-                    return true;
+                        return true;
                     }
                 }
+            }
                 return false; 
         }
         

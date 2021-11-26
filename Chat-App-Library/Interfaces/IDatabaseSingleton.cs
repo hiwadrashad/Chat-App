@@ -11,6 +11,6 @@ namespace Chat_App_Library.Interfaces
     {
         public void SetRepository(IRepository repository);
         public IRepository GetRepository();
-        public void SetMoqRepository(Mock<IRepository> repository);
+        public void SetMoqRepository(IRepository repository);
     }
 }

@@ -224,7 +224,49 @@ namespace Chat_App_Logic.Mocks
             {
               new SingleUserChat()
               {
-                CreationDate = DateTime.Now,
+                OriginUser = new User()
+               {
+            Email = "test",
+            Id = 1,
+            Name = "test",
+            Salt = "SALT",
+            Invitations = new List<Invitation>()
+                {
+                   new Invitation()
+                   {
+                    Accepted = false,
+                    Seen = false,
+                    DateSend = DateTime.Now,
+                    Id = 0,
+                    Message = "Test"
+                   }
+                },
+            Banned = false,
+            HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password", "SALT")),
+            Username = "test"
+        },
+        RecipientUser = new User()
+        {
+            Email = "test",
+            Id = 2,
+            Name = "test",
+            Salt = "SALT",
+            Invitations = new List<Invitation>()
+                {
+                   new Invitation()
+                   {
+                    Accepted = false,
+                    Seen = false,
+                    DateSend = DateTime.Now,
+                    Id = 0,
+                    Message = "Test"
+                   }
+                },
+            Banned = false,
+            HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password", "SALT")),
+            Username = "test"
+        },
+        CreationDate = DateTime.Now,
                 Id = 1,
                 Title = "test",
                 BannedUsers = new List<User>(),
@@ -377,7 +419,7 @@ namespace Chat_App_Logic.Mocks
             return _singleUserChats;
         }
 
-        public List<Message> GetMessages()
+        public virtual List<Message> GetMessages()
         {
             return _messages;
         }
@@ -388,7 +430,7 @@ namespace Chat_App_Logic.Mocks
             return query.Where(id).ToList();
         }
 #nullable enable
-        public User? GetUserById(Expression<Func<User, bool>> id)
+        public virtual User? GetUserById(Expression<Func<User, bool>> id)
         {
             IQueryable<User> query = _users.AsQueryable();
             return query.Where(id).FirstOrDefault();
@@ -570,6 +612,11 @@ namespace Chat_App_Logic.Mocks
             var User = _users.Where(a => a.Id == UserId).FirstOrDefault();
             var ChatToUpdate = _groupchat.Where(a => a.Id == Chat.Id).FirstOrDefault();
             ChatToUpdate.Users.Add(User);
+        }
+
+        public void SeedMoqData()
+        {
+
         }
 
     }

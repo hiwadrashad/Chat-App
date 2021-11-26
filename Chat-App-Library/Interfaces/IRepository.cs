@@ -46,5 +46,6 @@ namespace Chat_App_Library.Interfaces
         public void BlockUserFromGeneralChat(int UserId, GeneralChat Chat);
         public void BlockUserFromGroupChat(int UserId, GroupChat Chat);
         public void AddUserToGroupChat(int UserId, GroupChat Chat);
+        public void SeedMoqData();
     }
 }

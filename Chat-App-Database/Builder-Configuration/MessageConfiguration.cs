@@ -18,7 +18,7 @@ namespace Chat_App_Database.Builder_Configuration
             builder.ToTable(usertablename);
             builder.HasKey(a => a.Id);
             builder.Property(a => a.Text).HasMaxLength(contentmaxlength).IsRequired();
-            builder.Property(a => a.User).IsRequired();
+            builder.Property(a => a.User);
             builder.Property(a => a.StartDate).IsRequired();
         }
     }

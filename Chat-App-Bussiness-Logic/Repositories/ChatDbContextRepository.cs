@@ -32,6 +32,7 @@ namespace Chat_App_Logic.Repositories
 
         public void ClearAllDataSets()
         {
+            
             foreach (var item in _dbContext.GeneralChatDatabase)
             {
                 _dbContext.GeneralChatDatabase.Remove(item);
@@ -123,7 +124,7 @@ namespace Chat_App_Logic.Repositories
             return _dbContext.SingleUserChatDatabase.ToList();
         }
 
-        public List<Message> GetMessages()
+        public virtual List<Message> GetMessages()
         {
             return _dbContext.MessageDatabase.ToList();
         }
@@ -134,7 +135,7 @@ namespace Chat_App_Logic.Repositories
             return query.Where(id).ToList();
         }
 #nullable enable
-        public User? GetUserById(Expression<Func<User, bool>> id)
+        public virtual User? GetUserById(Expression<Func<User, bool>> id)
         {
             IQueryable<User> query = _dbContext.UserDatabase.AsQueryable();
             return query.Where(id).FirstOrDefault();
@@ -328,6 +329,63 @@ namespace Chat_App_Logic.Repositories
             var ChatToUpdate = _dbContext.GroupChatDatabase.Where(a => a.Id == Chat.Id).FirstOrDefault();
             ChatToUpdate.Users.Add(User);
             _dbContext.SaveChanges();
+        }
+
+        public void SeedMoqData()
+        {
+            _dbContext.MessageDatabase.Add(new Message()
+            {
+                EndDate = DateTime.Now,
+                Id = 1,
+                StartDate = DateTime.Now,
+                Text = "test",
+                User = new User()
+                {
+                    Email = "test",
+                    Id = 1,
+                    Name = "test",
+                    Salt = "SALT",
+                    Invitations = new List<Invitation>()
+                {
+                   new Invitation()
+                   {
+                    Accepted = false,
+                    Seen = false,
+                    DateSend = DateTime.Now,
+                    Id = 0,
+                    Message = "Test"
+                   }
+                },
+                    Banned = false,
+                    HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password", "SALT")),
+                    Role = Chat_App_Library.Enums.Role.Admin,
+                    Username = "test"
+
+                }
+            } 
+            );
+            _dbContext.UserDatabase.Add(new User()
+            {
+                Email = "test",
+                Id = 1,
+                Name = "test",
+                Salt = "SALT",
+                Invitations = new List<Invitation>()
+                {
+                   new Invitation()
+                   {
+                    Accepted = false,
+                    Seen = false,
+                    DateSend = DateTime.Now,
+                    Id = 0,
+                    Message = "Test"
+                   }
+                },
+                Banned = false,
+                HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password", "SALT")),
+                Username = "test"
+            }
+            );
         }
     }
 }

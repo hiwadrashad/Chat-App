@@ -46,6 +46,8 @@ namespace Chat_App_Bussiness_Logic.Services
                         Success = false
                     };
                 }
+                var test1 = InputChecking.ContainsSwearWords(Chat_App_Library.Constants.Swear_Word_Collection.GetAllSwearWords(), input.Title);
+                var test2 = InputChecking.ContainsSwearWords(Chat_App_Library.Constants.Swear_Word_Collection.GetAllSwearWords(), password);
                 if (InputChecking.ContainsSwearWords(Chat_App_Library.Constants.Swear_Word_Collection.GetAllSwearWords(), input.Title) ||
                     InputChecking.ContainsSwearWords(Chat_App_Library.Constants.Swear_Word_Collection.GetAllSwearWords(), password))
                 {
@@ -317,15 +319,18 @@ namespace Chat_App_Bussiness_Logic.Services
                         Success = false
                     };
                 }
-                if (User != input.GroupOwner || User.Role != Chat_App_Library.Enums.Role.Admin)
+                if (User.Id != input.GroupOwner.Id)
                 {
-                    return new RegistrationResponse()
+                    if (User.Role != Chat_App_Library.Enums.Role.Admin)
                     {
-                        Errors = new List<string>() {
+                        return new RegistrationResponse()
+                        {
+                            Errors = new List<string>() {
                         "You don't have the credentials to do this"
                         },
-                        Success = false
-                    };
+                            Success = false
+                        };
+                    }
                 }
 
                 await Task.Run(() => _repo.DeleteGroup(input));
@@ -388,15 +393,18 @@ namespace Chat_App_Bussiness_Logic.Services
                         Success = false
                     };
                 }
-                if (User != input.Owner || User.Role != Chat_App_Library.Enums.Role.Admin)
+                if (User.Id != input.Owner.Id)
                 {
-                    return new RegistrationResponse()
+                    if (User.Role != Chat_App_Library.Enums.Role.Admin)
                     {
-                        Errors = new List<string>() {
+                        return new RegistrationResponse()
+                        {
+                            Errors = new List<string>() {
                         "You don't have the credentials to do this"
                         },
-                        Success = false
-                    };
+                            Success = false
+                        };
+                    }
                 }
 
                 await Task.Run(() => _repo.DeleteGeneralChat(input));
@@ -459,15 +467,18 @@ namespace Chat_App_Bussiness_Logic.Services
                         Success = false
                     };
                 }
-                if (User != input.OriginUser || User.Role != Chat_App_Library.Enums.Role.Admin || User != input.RecipientUser)
+                if (User.Id != input.OriginUser.Id &&  User != input.RecipientUser)
                 {
-                    return new RegistrationResponse()
+                    if (User.Role != Chat_App_Library.Enums.Role.Admin)
                     {
-                        Errors = new List<string>() {
+                        return new RegistrationResponse()
+                        {
+                            Errors = new List<string>() {
                         "You don't have the credentials to do this"
                         },
-                        Success = false
-                    };
+                            Success = false
+                        };
+                    }
                 }
 
                 await Task.Run(() => _repo.DeleteSiglePersonChat(input));
@@ -702,7 +713,7 @@ namespace Chat_App_Bussiness_Logic.Services
                 }
 
                 var Return = await Task.Run(() => _repo.
-                GetGeneralChat());
+                GetSingleUserChat());
 
                 return Return;
             }

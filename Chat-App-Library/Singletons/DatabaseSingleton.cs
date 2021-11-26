@@ -1,4 +1,5 @@
 ﻿using Chat_App_Library.Interfaces;
+using Chat_App_Library.Models;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -38,9 +39,9 @@ namespace Chat_App_Library.Singletons
             return _repository;
         }
 
-        public void SetMoqRepository(Mock<IRepository> repository)
+        public void SetMoqRepository(IRepository repository)
         {
-            _repository = repository.Object;
+            _repository = repository;
         }
     }
 }

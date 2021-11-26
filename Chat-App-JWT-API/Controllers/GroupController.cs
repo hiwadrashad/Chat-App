@@ -127,7 +127,7 @@ namespace Chat_App__JWT_API.Controllers
         [HttpGet("api/getsingleuserchatbyuserid/{id}")]
         public async Task<IActionResult> GetSingleUserChatByUserId(int id)
         {
-            var Return = await _groupService.GetSingleUserChat(id);
+            var Return = await _groupService.GetSingleUserChatByUserId(id);
             var ReturnConverted = Return as IEnumerable<SingleUserChat>;
             if (ReturnConverted != null)
             {
