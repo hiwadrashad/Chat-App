@@ -13,6 +13,8 @@ namespace Chat_App_Library.Models
         public DateTime CreationDate { get; set; }
         public List<Message> Messages { get; set; } = new List<Message>();
         public List<User> Users { get; set; }
+        public int GroupOwnerId { get; set; }
+        [ForeignKey("GroupOwnerId")]
         public User GroupOwner { get; set; }
         public bool ChatBanned { get; set; }
         public int MaxAmountPersons { get; set; }

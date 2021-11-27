@@ -333,6 +333,74 @@ namespace Chat_App_Logic.Repositories
 
         public void SeedMoqData()
         {
+            _dbContext.GroupChatDatabase.
+            _dbContext.UserDatabase.Add(new User()
+            {
+                Email = "test",
+                Id = 1,
+                Name = "test",
+                Salt = "SALT",
+                Invitations = new List<Invitation>()
+                {
+                   new Invitation()
+                   {
+                    Accepted = false,
+                    Seen = false,
+                    DateSend = DateTime.Now,
+                    Id = 0,
+                    Message = "Test"
+                   }
+                },
+                Banned = false,
+                HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password", "SALT")),
+                Username = "test"
+
+            });
+            _dbContext.UserDatabase.Add(new User()
+            {
+                Email = "hiwad.rashad@itvitaelearning.nl",
+                Id = 2,
+                Name = "test",
+                Salt = "SALT",
+                Invitations = new List<Invitation>()
+                {
+                   new Invitation()
+                   {
+                    Accepted = false,
+                    Seen = false,
+                    DateSend = DateTime.Now,
+                    Id = 0,
+                    Message = "Test"
+                   }
+                },
+                Banned = false,
+                HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password", "SALT")),
+                Username = "test"
+
+            });
+            _dbContext.UserDatabase.Add(new User()
+            {
+                Email = "user@example.com",
+                Id = 0,
+                Name = "string",
+                Salt = "SALT",
+                Invitations = new List<Invitation>()
+                {
+                   new Invitation()
+                   {
+                    Accepted = false,
+                    Seen = false,
+                    DateSend = DateTime.Now,
+                    Id = 0,
+                    Message = "Test"
+                   }
+                },
+                Banned = false,
+                HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password", "SALT")),
+                Role = Chat_App_Library.Enums.Role.Admin,
+                Username = "string"
+
+            });
             _dbContext.MessageDatabase.Add(new Message()
             {
                 EndDate = DateTime.Now,

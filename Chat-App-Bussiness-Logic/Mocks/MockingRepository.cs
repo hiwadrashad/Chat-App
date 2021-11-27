@@ -616,8 +616,7 @@ namespace Chat_App_Logic.Mocks
 
         public void SeedMoqData()
         {
-
+            throw new NotImplementedException();
         }
-
     }
 }

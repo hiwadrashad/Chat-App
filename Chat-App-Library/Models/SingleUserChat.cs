@@ -12,7 +12,11 @@ namespace Chat_App_Library.Models
         public string Title { get; set; }
         public DateTime CreationDate { get; set; }
         public List<Message> Messages { get; set; } = new List<Message>();
+        public int OriginUserId { get; set; }
+        [ForeignKey("OriginUserId")]
         public User OriginUser { get; set; }
+        public int RecipientUserId { get; set; }
+        [ForeignKey("RecipientUserId")]
         public User RecipientUser { get; set; }
         public bool ChatBanned { get; set; }
         public int MaxAmountPersons { get; set; }
