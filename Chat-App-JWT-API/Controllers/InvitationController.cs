@@ -30,8 +30,8 @@ namespace Chat_App_JWT_API.Controllers
         public async  Task<IActionResult> SendInvitation(int recieverid,GroupType grouptype,int chatid, [FromBody] Invitation invitation)
         {
             var Return = await _invitationService.SendInvitation(recieverid,grouptype,chatid,invitation);
-            var ReturnConverted = Return as IEnumerable<SingleUserChat>;
-            if (ReturnConverted != null)
+            var ReturnConverted = Return as RegistrationResponse;
+            if (ReturnConverted.Success == true)
             {
                 return Ok(Return);
             }
@@ -46,8 +46,8 @@ namespace Chat_App_JWT_API.Controllers
         public async Task<IActionResult> AcceptInvitation(int recieverid,[FromBody] Invitation invitation)
         {
             var Return = await _invitationService.AcceptInvitation(recieverid,invitation);
-            var ReturnConverted = Return as IEnumerable<SingleUserChat>;
-            if (ReturnConverted != null)
+            var ReturnConverted = Return as RegistrationResponse;
+            if (ReturnConverted.Success == true)
             {
                 return Ok(Return);
             }
@@ -62,8 +62,8 @@ namespace Chat_App_JWT_API.Controllers
         public async Task<IActionResult> DeclineInvitation(int recieverid, [FromBody] Invitation invitation)
         {
             var Return = await _invitationService.AcceptInvitation(recieverid, invitation);
-            var ReturnConverted = Return as IEnumerable<SingleUserChat>;
-            if (ReturnConverted != null)
+            var ReturnConverted = Return as RegistrationResponse;
+            if (ReturnConverted.Success == true)
             {
                 return Ok(Return);
             }

@@ -174,7 +174,7 @@ namespace Chat_App_Bussiness_Logic.Services
                             Success = false
                         };
                     }
-                    if (Chat.MaxAmountPersons <= Chat.Users.Count())
+                    if (Chat.MaxAmountPersons <= Chat.Users.Count() && Chat.MaxAmountPersons != 0)
                     {
                         return new RegistrationResponse()
                         {

@@ -20,7 +20,7 @@ namespace Chat_App__JWT_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CredentialsController : ControllerBase
+    public class CredentialsController : ControllerBase, ICredentialsController
     {
         private IDatabaseSingleton _databaseSingleton;
         private IRepository _repo;
@@ -57,7 +57,7 @@ namespace Chat_App__JWT_API.Controllers
             else
             {
                 input.UserToAscend.Role = Chat_App_Library.Enums.Role.Admin;
-                var Return = await _credentialService.UpdateUserData(input.UserToAscend);
+                var Return = await _credentialService.MakeUserAdmin(input);
                 var ReturnConverted = Return as RegistrationResponse;
                 if (ReturnConverted.Success == true)
                 {
@@ -76,7 +76,7 @@ namespace Chat_App__JWT_API.Controllers
             if (ModelState.IsValid)
             {
 
-                var testtoken = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+                //var testtoken = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
                 var existingUsers = _databaseSingleton.GetRepository().GetUsers();
 
@@ -129,10 +129,10 @@ namespace Chat_App__JWT_API.Controllers
                     {
                         var jwtToken = await _tokenGenerator.GenerateJwtToken(input);
                         //HttpContext.Request.Headers["Authorization"] = jwtToken;
-                        var testtoken = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+                        //var testtoken = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
                         var Return = await _credentialService.Login(input, jwtToken);
-                        var ReturnConverted = Return as string;
+                        var ReturnConverted = Return as AuthResult;
                         if (ReturnConverted != null)
                         {
                             return Ok(jwtToken);
@@ -209,7 +209,7 @@ namespace Chat_App__JWT_API.Controllers
         public async Task<IActionResult> GetUsersByEmail(string id, int requestingid)
         {
             var Return = await _credentialService.GetUsersByEmail(id, requestingid);
-            var ReturnConverted = Return as List<Message>;
+            var ReturnConverted = Return as IEnumerable<User>;
             if (ReturnConverted != null)
             {
                 return Ok(Return);
@@ -239,7 +239,7 @@ namespace Chat_App__JWT_API.Controllers
 #nullable enable
         public async Task<IActionResult> GetUserById(int id, int requestingid)
         {
-            var Return = await _credentialService.GetUsers(requestingid);
+            var Return = await _credentialService.GetUserById(id,requestingid);
             var ReturnConverted = Return as User;
             if (ReturnConverted != null)
             {
@@ -287,14 +287,6 @@ namespace Chat_App__JWT_API.Controllers
             var Return = await _credentialService.BanUser(id, requestingid);
             var ReturnConverted = Return as RegistrationResponse;
             if (ReturnConverted.Success == true)
-            {
-                return Ok(Return);
-            }
-            else
-            {
-                return BadRequest(Return);
-            }
-            if (ReturnConverted != null)
             {
                 return Ok(Return);
             }

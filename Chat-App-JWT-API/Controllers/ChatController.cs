@@ -27,34 +27,11 @@ namespace Chat_App__JWT_API.Controllers
             _repo = databaseSingleton.GetRepository();
         }
         [HttpGet("test")]
-        public IActionResult Test()
+        public async Task<IActionResult> Test()
         {
             ChatDbContextRepository DBContext = new ChatDbContextRepository();
-            DBContext.AddUser(new User()
-            {
-                Email = "user@example.com",
-                Id = 0,
-                Name = "string",
-                Salt = "SALT",
-                Invitations = new List<Invitation>()
-                {
-                   new Invitation()
-                   {
-                    Accepted = false,
-                    Seen = false,
-                    DateSend = DateTime.Now,
-                    Id = 0,
-                    Message = "Test"
-                   }
-                },
-                Banned = false,
-                HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password", "SALT")),
-                Role = Chat_App_Library.Enums.Role.Admin,
-                Username = "string"
-
-            });
-            DBContext.ClearAllDataSets();
-            return Ok("ok");
+            DBContext.SeedMoqData();
+            return Ok();
         }
 
         [HttpGet("api/getmessages/{id}")]

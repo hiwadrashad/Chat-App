@@ -49,9 +49,7 @@ namespace Chat_App_Bussiness_Logic.Services
 
         public static bool ValidUserInput(User user)
         {
-            if (DatabaseSingleton.GetSingleton().GetRepository().GetUsers()
-                 .Any(a => a.Username == user.Username)
-                 || user.Username.IsNullOrWhiteSpace() || IsEmailValid(user.Email) ||
+            if ( user.Username.IsNullOrWhiteSpace() || IsEmailValid(user.Email) ||
                  ContainsSwearWords(Chat_App_Library.Constants.Swear_Word_Collection.GetAllSwearWords(),
                  user.Name) )
             {

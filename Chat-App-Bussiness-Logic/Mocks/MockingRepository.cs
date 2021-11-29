@@ -84,11 +84,10 @@ namespace Chat_App_Logic.Mocks
              new GroupChat()
              {
                 CreationDate = DateTime.Now,
-                Id = 1,
                 Title = "test",
                 GroupOwner =        new User() {
                 Email = "test",
-                Id = 1,
+                Id = 0,
                 Name = "test",
                 Salt = "SALT",
                      Invitations = new List<Invitation>()

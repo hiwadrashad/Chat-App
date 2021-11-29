@@ -20,17 +20,17 @@ namespace Chat_App_Database.Database
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {
-            builder.UseSqlServer(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=Chat-App-Backend;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+            builder.UseSqlServer(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=Chat-App;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.ApplyConfiguration(new MessageConfiguration());
-            modelBuilder.ApplyConfiguration(new GeneralChatConfiguration());
-            modelBuilder.ApplyConfiguration(new GroupChatConfiguration());
-            modelBuilder.ApplyConfiguration(new RefreshConfiguration());
-            modelBuilder.ApplyConfiguration(new UserConfiguration());
+            //modelBuilder.ApplyConfiguration(new MessageConfiguration());
+            //modelBuilder.ApplyConfiguration(new GeneralChatConfiguration());
+            //modelBuilder.ApplyConfiguration(new GroupChatConfiguration());
+            //modelBuilder.ApplyConfiguration(new RefreshConfiguration());
+            //modelBuilder.ApplyConfiguration(new UserConfiguration());
         }
     }
 }

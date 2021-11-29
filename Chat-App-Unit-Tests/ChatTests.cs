@@ -16,6 +16,7 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Chat_App_Unit_Tests
@@ -79,49 +80,38 @@ namespace Chat_App_Unit_Tests
 
         }
         [Fact]
-        public async void GET_MESSAGES()
+        public async Task GET_MESSAGES()
         {
             LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
             PATH.SetToUnitTesting();
-            //var MockingRepository = new Mock<ChatDbContextRepository>();            
-            //MockingRepository.Setup(a => a.GetMessages()).Returns(MOCKRETURN_MESSAGES);
-            //MockingRepository.Setup(a => a.GetUserById(a => a.Id == 1)).Returns(MOCKRETURN_USER);
-            //_databaseSingleton.SetMoqRepository(MockingRepository.Object);
-            ChatDbContextRepository DBContext = new ChatDbContextRepository();
-            DBContext.AddUser(new User()
-            {
-                Email = "user@example.com",
-                Id = 0,
-                Name = "string",
-                Salt = "SALT",
-                Invitations = new List<Invitation>()
-                {
-                   new Invitation()
-                   {
-                    Accepted = false,
-                    Seen = false,
-                    DateSend = DateTime.Now,
-                    Id = 0,
-                    Message = "Test"
-                   }
-                },
-                Banned = false,
-                HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password", "SALT")),
-                Role = Chat_App_Library.Enums.Role.Admin,
-                Username = "string"
-
-            });
-            DBContext.ClearAllDataSets();
-            //var chatService = new ChatService(_databaseSingleton);
-            //var controller = new ChatController(_databaseSingleton, chatService);
-            //var test = await controller.GetMessages(1) as BadRequestObjectResult;
-            //var Return = await controller.GetMessages(1) as OkObjectResult;
-            //Assert.NotNull(Return);
-            Assert.True(true);
+            var MockingRepository = new Mock<ChatDbContextRepository>();
+            MockingRepository.Setup(a => a.GetMessages()).Returns(MOCKRETURN_MESSAGES);
+            MockingRepository.Setup(a => a.GetUserById(a => a.Id == 1)).Returns(MOCKRETURN_USER);
+            _databaseSingleton.SetRepository(new MockingRepository());
+            var chatService = new ChatService(_databaseSingleton);
+            var controller = new ChatController(_databaseSingleton, chatService);
+            var Return = await controller.GetMessages(1) as OkObjectResult;
+            Assert.NotNull(Return);
         }
 
         [Fact]
-        public async void GET_MESSAGES_BY_USER_ID()
+        public async Task GET_MESSAGES_EF6()
+        {
+            LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
+            PATH.SetToUnitTesting();
+            var MockingRepository = new Mock<ChatDbContextRepository>();
+            MockingRepository.Setup(a => a.GetMessages()).Returns(MOCKRETURN_MESSAGES);
+            MockingRepository.Setup(a => a.GetUserById(a => a.Id == 1)).Returns(MOCKRETURN_USER);
+            _databaseSingleton.SetRepository(new MockingRepository());
+            var chatService = new ChatService(_databaseSingleton);
+            var controller = new ChatController(_databaseSingleton, chatService);
+            var Return = await controller.GetMessages(1) as OkObjectResult;
+            Assert.NotNull(Return);
+        }
+
+
+        [Fact]
+        public async Task GET_MESSAGES_BY_USER_ID()
         {
             LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
             PATH.SetToUnitTesting();
@@ -136,7 +126,7 @@ namespace Chat_App_Unit_Tests
         }
 
         [Fact]
-        public async void DELETE_MESSAGE_GROUP()
+        public async Task DELETE_MESSAGE_GROUP()
         {
             LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
             PATH.SetToUnitTesting();
@@ -151,7 +141,7 @@ namespace Chat_App_Unit_Tests
         }
 
         [Fact]
-        public async void DELETE_MESSAGE_GENERAL()
+        public async Task DELETE_MESSAGE_GENERAL()
         {
             LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
             PATH.SetToUnitTesting();
@@ -166,7 +156,7 @@ namespace Chat_App_Unit_Tests
         }
 
         [Fact]
-        public async void DELETE_MESSAGE_SINGLE_USER()
+        public async Task DELETE_MESSAGE_SINGLE_USER()
         {
             LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
             PATH.SetToUnitTesting();
@@ -181,7 +171,7 @@ namespace Chat_App_Unit_Tests
         }
 
         [Fact]
-        public async void UPDATE_MESSAGE_TO_GROUP_CHAT()
+        public async Task UPDATE_MESSAGE_TO_GROUP_CHAT()
         {
             LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
             PATH.SetToUnitTesting();
@@ -192,12 +182,16 @@ namespace Chat_App_Unit_Tests
             _databaseSingleton.SetRepository(new MockingRepository());
             var chatService = new ChatService(_databaseSingleton);
             var controller = new ChatController(_databaseSingleton, chatService);
-            var Return = await controller.UpdateMessageToGroupChat(1, MOCKRETURN_MESSAGE) as OkObjectResult;
+            var Return = await controller.UpdateMessageToGroupChat(0, MOCKRETURN_MESSAGE) as OkObjectResult;
             Assert.NotNull(Return);
         }
 
+        /// <summary>
+        /// Test only works in debugging mode!
+        /// </summary>
+        /// 
         [Fact]
-        public async void UPDATE_MESSAGE_TO_SINGLE_USER_CHAT()
+        public async Task UPDATE_MESSAGE_TO_SINGLE_USER_CHAT()
         {
             LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
             PATH.SetToUnitTesting();
@@ -213,7 +207,7 @@ namespace Chat_App_Unit_Tests
         }
 
         [Fact]
-        public async void UPDATE_MESSAGE_TO_GENERAL_CHAT()
+        public async Task UPDATE_MESSAGE_TO_GENERAL_CHAT()
         {
             LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
             PATH.SetToUnitTesting();
@@ -229,7 +223,7 @@ namespace Chat_App_Unit_Tests
         }
 
         [Fact]
-        public async void ADD_MESSAGE_TO_GROUP_CHAT()
+        public async Task ADD_MESSAGE_TO_GROUP_CHAT()
         {
             LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
             PATH.SetToUnitTesting();
@@ -240,11 +234,11 @@ namespace Chat_App_Unit_Tests
             _databaseSingleton.SetRepository(new MockingRepository());
             var chatService = new ChatService(_databaseSingleton);
             var controller = new ChatController(_databaseSingleton, chatService);
-            var Return = await controller.AddMessageToGroupChat(1, MOCKRETURN_MESSAGE) as OkObjectResult;
+            var Return = await controller.AddMessageToGroupChat(0, MOCKRETURN_MESSAGE) as OkObjectResult;
             Assert.NotNull(Return);
         }
         [Fact]
-        public async void ADD_MESSAGE_TO_SINGLE_USER_CHAT()
+        public async Task ADD_MESSAGE_TO_SINGLE_USER_CHAT()
         {
             LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
             PATH.SetToUnitTesting();
@@ -259,7 +253,7 @@ namespace Chat_App_Unit_Tests
             Assert.NotNull(Return);
         }
         [Fact]
-        public async void ADD_MESSAGE_TO_GENERAL_CHAT()
+        public async Task ADD_MESSAGE_TO_GENERAL_CHAT()
         {
             LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
             PATH.SetToUnitTesting();

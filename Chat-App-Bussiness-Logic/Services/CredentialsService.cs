@@ -26,6 +26,7 @@ namespace Chat_App_Bussiness_Logic.Services
         private JWTTokens _tokenGenerator;
         private readonly TokenValidationParameters _tokenValidationParams;
         private readonly JWTVerification _jwtVerification;
+
         public CredentialsService(IDatabaseSingleton databaseSingleton, IOptionsMonitor<JwtConfig> optionsMonitor,
             TokenValidationParameters tokenValidationParameters)
         {
@@ -116,7 +117,6 @@ namespace Chat_App_Bussiness_Logic.Services
                         Success = false
                     };
                 }
-
                 await Task.Run(() => _repo.UpdateUserData(input.UserToAscend));
 
                 return new RegistrationResponse()

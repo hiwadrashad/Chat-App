@@ -13,7 +13,7 @@ namespace Chat_App_Library.Models
         public string Title { get; set; }
         public DateTime CreationDate { get; set; }
         public List<Message> Messages { get; set; } = new List<Message>();
-        public int OwnerId { get; set; }
+        public int? OwnerId { get; set; }
         [ForeignKey("OwnerId")]
         public User Owner { get; set; }
         public bool ChatBanned { get; set; }

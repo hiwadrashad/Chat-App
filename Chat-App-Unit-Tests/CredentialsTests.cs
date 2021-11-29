@@ -1,5 +1,7 @@
 ﻿using Castle.Core.Configuration;
+using Chat_App__JWT_API.Controllers;
 using Chat_App_Bussiness_Logic.Configuration;
+using Chat_App_Bussiness_Logic.DependencyInjection;
 using Chat_App_Bussiness_Logic.Services;
 using Chat_App_Library.Interfaces;
 using Chat_App_Library.Models;
@@ -20,14 +22,15 @@ using Xunit;
 
 namespace Chat_App_Unit_Tests
 {
-    public class GroupTests : MockData
+    public class CredentialsTests : MockData
     {
         private Microsoft.Extensions.Configuration.IConfiguration _configuration;
         private readonly IDatabaseSingleton _databaseSingleton;
         private readonly IRepository _repo;
-        private readonly IGroupService _groupService;
+        private readonly IChatService _chatService;
         private readonly ICredentialsService _credentialsService;
-        public GroupTests()
+        private readonly ICredentialsController _credentialsController;
+        public CredentialsTests()
         {
             var builder = new ConfigurationBuilder()
                             .SetBasePath(@"E:\Programming\Chat-App\Chat-App-JWT-API")
@@ -44,6 +47,7 @@ namespace Chat_App_Unit_Tests
             services.AddSingleton(typeof(IInvitationService), new InvitationService(DatabaseSingleton.GetSingleton()));
             services.AddSingleton(typeof(IRepository), DatabaseSingleton.GetSingleton().GetRepository());
             services.AddSingleton<ICredentialsService, CredentialsService>();
+            services.AddSingleton<ICredentialsController, CredentialsController>();
 
             var key = Encoding.ASCII.GetBytes(_configuration["JwtConfig:Secret"]);
 
@@ -72,169 +76,154 @@ namespace Chat_App_Unit_Tests
             var serviceProvider = services.BuildServiceProvider();
 
             _databaseSingleton = serviceProvider.GetService<IDatabaseSingleton>();
-            _groupService = serviceProvider.GetService<IGroupService>();
+            _chatService = serviceProvider.GetService<IChatService>();
             _credentialsService = serviceProvider.GetService<ICredentialsService>();
+            _credentialsController = serviceProvider.GetService<ICredentialsController>();
 
             _repo = _databaseSingleton.GetRepository();
 
         }
 
-
         [Fact]
-        public async Task ADD_GROUP_CHAT()
+        public async Task LOGIN()
         {
             LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
             PATH.SetToUnitTesting();
             var MockingRepository = new Mock<IRepository>();
-            MockingRepository.Setup(a => a.GetUserById(a => a.Id == 1)).Returns(MOCKRETURN_USER);
-            MockingRepository.Setup(a => a.AddGroupChat(MOCKRETURN_GROUPCHAT));
+            MockingRepository.Setup(a => a.GetUsers()).Returns(MOCKRETURN_USERS);
             _databaseSingleton.SetRepository(new MockingRepository());
-            var groupservice = new GroupService(_databaseSingleton);
-            var controller = new Chat_App__JWT_API.Controllers.GroupController(_databaseSingleton, groupservice);
-            var Return = await controller.AddGroupChat("password",MOCKRETURN_GROUPCHAT) as OkObjectResult;
+            var chatService = _credentialsService;
+            var Return = await _credentialsController.Login("password", MOCKRETURN_USER) as OkObjectResult;
             Assert.NotNull(Return);
         }
 
         [Fact]
-        public async Task ADD_SINGLE_USER_CHAT()
+        public async Task MAKE_USER_ADMIN()
         {
             LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
             PATH.SetToUnitTesting();
             var MockingRepository = new Mock<IRepository>();
-            MockingRepository.Setup(a => a.GetUserById(a => a.Id == 1)).Returns(MOCKRETURN_USER);
-            MockingRepository.Setup(a => a.AddSingleUserChat(MOCKRETURN_SINGLE_USER_CHAT));
+            MockingRepository.Setup(a => a.UpdateUserData(MOCKRETURN_USER));
             _databaseSingleton.SetRepository(new MockingRepository());
-            var groupservice = new GroupService(_databaseSingleton);
-            var controller = new Chat_App__JWT_API.Controllers.GroupController(_databaseSingleton, groupservice);
-            var test = await controller.AddSingleUserChat("password", MOCKRETURN_SINGLE_USER_CHAT) as BadRequestObjectResult;
-            var Return = await controller.AddSingleUserChat("password", MOCKRETURN_SINGLE_USER_CHAT) as OkObjectResult;
+            var chatService = _credentialsService;
+            var Return = await _credentialsController.MakeUserAdmin(MOCKRETURN_USERTOASCEND) as OkObjectResult;
             Assert.NotNull(Return);
         }
         [Fact]
-        public async Task ADD_GENERAL_CHAT()
+        public async Task REGISTER()
         {
             LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
             PATH.SetToUnitTesting();
             var MockingRepository = new Mock<IRepository>();
-            MockingRepository.Setup(a => a.GetUserById(a => a.Id == 1)).Returns(MOCKRETURN_USER);
-            MockingRepository.Setup(a => a.AddGeneralChat(MOCKRETURN_GENERALCHAT));
+            MockingRepository.Setup(a => a.GetUsers()).Returns(MOCKRETURN_USERS);
             _databaseSingleton.SetRepository(new MockingRepository());
-            var groupservice = new GroupService(_databaseSingleton);
-            var controller = new Chat_App__JWT_API.Controllers.GroupController(_databaseSingleton, groupservice);
-            var Return = await controller.AddGeneralChat(MOCKRETURN_GENERALCHAT) as OkObjectResult;
-            Assert.NotNull(Return);
-        }
-        [Fact]
-        public async Task DELETE_GENERAL_CHAT()
-        {
-            LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
-            PATH.SetToUnitTesting();
-            var MockingRepository = new Mock<IRepository>();
-            MockingRepository.Setup(a => a.GetUserById(a => a.Id == 1)).Returns(MOCKRETURN_USER);
-            MockingRepository.Setup(a => a.DeleteGeneralChat(MOCKRETURN_GENERALCHAT));
-            _databaseSingleton.SetRepository(new MockingRepository());
-            var groupservice = new GroupService(_databaseSingleton);
-            var controller = new Chat_App__JWT_API.Controllers.GroupController(_databaseSingleton, groupservice);
-            var Return = await controller.DeleteGeneralChat(1,MOCKRETURN_GENERALCHAT) as OkObjectResult;
-            Assert.NotNull(Return);
-        }
-        [Fact]
-        public async Task DELETE_GROUP()
-        {
-            LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
-            PATH.SetToUnitTesting();
-            var MockingRepository = new Mock<IRepository>();
-            MockingRepository.Setup(a => a.GetUserById(a => a.Id == 1)).Returns(MOCKRETURN_USER);
-            MockingRepository.Setup(a => a.DeleteGroup(MOCKRETURN_GROUPCHAT));
-            _databaseSingleton.SetRepository(new MockingRepository());
-            var groupservice = new GroupService(_databaseSingleton);
-            var controller = new Chat_App__JWT_API.Controllers.GroupController(_databaseSingleton, groupservice);
-            var Return = await controller.DeleteGroup(1, MOCKRETURN_GROUPCHAT) as OkObjectResult;
-            Assert.NotNull(Return);
-        }
-        [Fact]
-        public async Task DELETE_SINGLE_PERSON_CHAT()
-        {
-            LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
-            PATH.SetToUnitTesting();
-            var MockingRepository = new Mock<IRepository>();
-            MockingRepository.Setup(a => a.GetUserById(a => a.Id == 1)).Returns(MOCKRETURN_USER);
-            MockingRepository.Setup(a => a.DeleteSiglePersonChat(MOCKRETURN_SINGLE_USER_CHAT));
-            _databaseSingleton.SetRepository(new MockingRepository());
-            var groupservice = new GroupService(_databaseSingleton);
-            var controller = new Chat_App__JWT_API.Controllers.GroupController(_databaseSingleton, groupservice);
-            var Return = await controller.DeleteSinglePersonChat(1, MOCKRETURN_SINGLE_USER_CHAT) as OkObjectResult;
+            var chatService = _credentialsService;
+            var NewUser = new User() {
+
+                Email = "REGISTER",
+                Id = 100,
+                Name = "REGISTER",
+                Salt = "REGISTER",
+                Invitations = new List<Invitation>()
+                {
+                   new Invitation()
+                   {
+                    Accepted = false,
+                    Seen = false,
+                    DateSend = DateTime.Now,
+                    Id = 0,
+                    Message = "REGISTER"
+                   }
+                },
+                Banned = false,
+                HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password", "SALT")),
+                Username = "REGISTER"
+            };
+            var Return = await _credentialsController.Register("password",NewUser) as OkObjectResult;
             Assert.NotNull(Return);
         }
 
         [Fact]
-        public async Task GET_GROUP_CHATS_BY_USER_ID()
+        public async Task GET_USERS_BY_EMAIL()
         {
             LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
             PATH.SetToUnitTesting();
             var MockingRepository = new Mock<IRepository>();
+            MockingRepository.Setup(a => a.GetUsers()).Returns(MOCKRETURN_USERS);
             MockingRepository.Setup(a => a.GetUserById(a => a.Id == 1)).Returns(MOCKRETURN_USER);
-            MockingRepository.Setup(a => a.GetGroupChatsByUserId(a => a.Id == 1)).Returns(MOCKRETURN_GROUPCHATS);
             _databaseSingleton.SetRepository(new MockingRepository());
-            var groupservice = new GroupService(_databaseSingleton);
-            var controller = new Chat_App__JWT_API.Controllers.GroupController(_databaseSingleton, groupservice);
-            var Return = await controller.GetGroupChatsByUserId(1) as OkObjectResult;
+            var chatService = _credentialsService;
+            var Return = await _credentialsController.GetUsersByEmail("user@example.com", 1) as OkObjectResult;
             Assert.NotNull(Return);
         }
+
         [Fact]
-        public async Task GET_SINGLE_USER_CHATS_BY_USER_ID()
+
+        public async Task GET_USERS()
         {
             LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
             PATH.SetToUnitTesting();
             var MockingRepository = new Mock<IRepository>();
-            MockingRepository.Setup(a => a.GetUserById(a => a.Id == 1)).Returns(MOCKRETURN_USER);
-            MockingRepository.Setup(a => a.GetSingleUserChatByUserId(a => a.Id == 1)).Returns(MOCKRETURN_SINGLE_USER_CHATS);
+            MockingRepository.Setup(a => a.GetUsers()).Returns(MOCKRETURN_USERS);
             _databaseSingleton.SetRepository(new MockingRepository());
-            var groupservice = new GroupService(_databaseSingleton);
-            var controller = new Chat_App__JWT_API.Controllers.GroupController(_databaseSingleton, groupservice);
-            var Return = await controller.GetSingleUserChatByUserId(1) as OkObjectResult;
+            var chatService = _credentialsService;
+            var Return = await _credentialsController.GetUsers(1) as OkObjectResult;
             Assert.NotNull(Return);
         }
+
         [Fact]
-        public async Task GET_GROUPS_CHAT()
+
+        public async Task GET_USER_BY_ID()
         {
             LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
             PATH.SetToUnitTesting();
             var MockingRepository = new Mock<IRepository>();
             MockingRepository.Setup(a => a.GetUserById(a => a.Id == 1)).Returns(MOCKRETURN_USER);
-            MockingRepository.Setup(a => a.GetGroupChats()).Returns(MOCKRETURN_GROUPCHATS);
             _databaseSingleton.SetRepository(new MockingRepository());
-            var groupservice = new GroupService(_databaseSingleton);
-            var controller = new Chat_App__JWT_API.Controllers.GroupController(_databaseSingleton, groupservice);
-            var Return = await controller.GetGroupsChat(1) as OkObjectResult;
+            var chatService = _credentialsService;
+            var Return = await _credentialsController.GetUserById(1,1) as OkObjectResult;
             Assert.NotNull(Return);
         }
+
         [Fact]
-        public async Task GET_GENERAL_CHAT()
+
+        public async Task GET_USERS_BY_NAME()
         {
             LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
             PATH.SetToUnitTesting();
             var MockingRepository = new Mock<IRepository>();
-            MockingRepository.Setup(a => a.GetUserById(a => a.Id == 1)).Returns(MOCKRETURN_USER);
-            MockingRepository.Setup(a => a.GetGeneralChat()).Returns(MOCKRETURN_GENERALCHATS);
+            MockingRepository.Setup(a => a.GetUsers()).Returns(MOCKRETURN_USERS);
             _databaseSingleton.SetRepository(new MockingRepository());
-            var groupservice = new GroupService(_databaseSingleton);
-            var controller = new Chat_App__JWT_API.Controllers.GroupController(_databaseSingleton, groupservice);
-            var Return = await controller.GetGeneralChat(1) as OkObjectResult;
+            var chatService = _credentialsService;
+            var Return = await _credentialsController.GetUsersByName("test", 1) as OkObjectResult;
             Assert.NotNull(Return);
         }
+
         [Fact]
-        public async Task GET_SINGLE_USER_CHAT()
+
+        public async Task UPDATE_USER_DATA()
+        {
+            LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
+            PATH.SetToUnitTesting();
+            var MockingRepository = new Mock<IRepository>();
+            MockingRepository.Setup(a => a.UpdateUserData(MOCKRETURN_USER));
+            _databaseSingleton.SetRepository(new MockingRepository());
+            var chatService = _credentialsService;
+            var Return = await _credentialsController.UpdateUserData(MOCKRETURN_USER) as OkObjectResult;
+            Assert.NotNull(Return);
+        }
+
+        [Fact]
+
+        public async Task BanUser()
         {
             LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
             PATH.SetToUnitTesting();
             var MockingRepository = new Mock<IRepository>();
             MockingRepository.Setup(a => a.GetUserById(a => a.Id == 1)).Returns(MOCKRETURN_USER);
-            MockingRepository.Setup(a => a.GetSingleUserChatByUserId(a => a.Id == 1)).Returns(MOCKRETURN_SINGLE_USER_CHATS);
             _databaseSingleton.SetRepository(new MockingRepository());
-            var groupservice = new GroupService(_databaseSingleton);
-            var controller = new Chat_App__JWT_API.Controllers.GroupController(_databaseSingleton, groupservice);
-            var Return = await controller.GetSingleUserChatByUserId(1) as OkObjectResult;
+            var chatService = _credentialsService;
+            var Return = await _credentialsController.BanUser(0,1) as OkObjectResult;
             Assert.NotNull(Return);
         }
     }

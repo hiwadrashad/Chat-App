@@ -79,18 +79,70 @@ namespace Chat_App_Unit_Tests
 
 
         [Fact]
-        public async void ADD_GROUP_CHAT()
+        public async Task SEND_INVITATION()
         {
-            //LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
-            //PATH.SetToUnitTesting();
-            //var MockingRepository = new Mock<IRepository>();
-            //MockingRepository.Setup(a => a.GetUsers()).Returns(MOCKRETURN_USERS);
-            //_databaseSingleton.SetRepository(new MockingRepository());
-            //var groupservice = new GroupService(_databaseSingleton);
-            //var controller = new Chat_App_JWT_API.Controllers.InvitationController();
-            //var Return = await controller.AddGroupChat("password", MOCKRETURN_GROUPCHAT) as OkObjectResult;
-            //Assert.NotNull(Return);
+            LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
+            PATH.SetToUnitTesting();
+            var MockingRepository = new Mock<IRepository>();
+            MockingRepository.Setup(a => a.GetUsers()).Returns(MOCKRETURN_USERS);
+            _databaseSingleton.SetRepository(new MockingRepository());
+            var invitationservice = new InvitationService(_databaseSingleton);
+            var controller = new Chat_App_JWT_API.Controllers.InvitationController(invitationservice);
+            var Return = await controller.SendInvitation(1, Chat_App_Library.Enums.GroupType.groupchat, 1, MOCKRETURN_INVITATION) as OkObjectResult;
+            Assert.NotNull(Return);
         }
 
+        /// <summary>
+        /// Test only works in debugging mode!
+        /// </summary>
+        [Fact]
+        public async Task ACCEPT_INVITATION()
+        {
+            LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
+            PATH.SetToUnitTesting();
+            var MockingRepository = new Mock<IRepository>();
+            MockingRepository.Setup(a => a.GetUsers()).Returns(MOCKRETURN_USERS);
+            MockingRepository.Setup(a => a.GetGroupChats()).Returns(MOCKRETURN_GROUPCHATS);
+            MockingRepository.Setup(a => a.GetSingleUserChat()).Returns(MOCKRETURN_SINGLE_USER_CHATS);
+            _databaseSingleton.SetRepository(new MockingRepository());
+            var invitationservice = new InvitationService(_databaseSingleton);
+            var controller = new Chat_App_JWT_API.Controllers.InvitationController(invitationservice);
+            var Return = await controller.AcceptInvitation(0, MOCKRETURN_INVITATION) as OkObjectResult;
+            Assert.NotNull(Return);
+        }
+        /// <summary>
+        /// Test only works in debugging mode!
+        /// </summary>
+        [Fact]
+        public async Task DECLINE_INVITATION()
+        {
+            LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
+            PATH.SetToUnitTesting();
+            var MockingRepository = new Mock<IRepository>();
+            MockingRepository.Setup(a => a.GetUsers()).Returns(MOCKRETURN_USERS);
+            _databaseSingleton.SetRepository(new MockingRepository());
+            var invitationservice = new InvitationService(_databaseSingleton);
+            var controller = new Chat_App_JWT_API.Controllers.InvitationController(invitationservice);
+            var Return = await controller.DeclineInvitation(0, MOCKRETURN_INVITATION) as OkObjectResult;
+            Assert.NotNull(Return);
+        }
+
+        [Fact]
+
+        public async Task GET_GROUP()
+        {
+            LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
+            PATH.SetToUnitTesting();
+            var MockingRepository = new Mock<IRepository>();
+            MockingRepository.Setup(a => a.GetGeneralChat()).Returns(MOCKRETURN_GENERALCHATS);
+            MockingRepository.Setup(a => a.GetGroupChats()).Returns(MOCKRETURN_GROUPCHATS);
+            MockingRepository.Setup(a => a.GetSingleUserChat()).Returns(MOCKRETURN_SINGLE_USER_CHATS);
+            MockingRepository.Setup(a => a.GetUserById(a => a.Id == 1)).Returns(MOCKRETURN_USER);
+            _databaseSingleton.SetRepository(new MockingRepository());
+            var invitationservice = new InvitationService(_databaseSingleton);
+            var controller = new Chat_App_JWT_API.Controllers.InvitationController(invitationservice);
+            var Return = await controller.DeclineInvitation(0, MOCKRETURN_INVITATION) as OkObjectResult;
+            Assert.NotNull(Return);
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Chat_App_Library.Models;
+using Chat_App_Library.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -578,5 +579,78 @@ namespace Chat_App_Unit_Tests
                 }
               }
             };
+
+        public static List<Invitation> MOCKRETURN_INVITATIONS = new List<Invitation>()
+                {
+                   new Invitation()
+                   {
+                    Accepted = false,
+                    Seen = false,
+                    DateSend = DateTime.Now,
+                    Id = 0,
+                    Message = "Test"
+                   }
+
+        };
+
+        public static Invitation MOCKRETURN_INVITATION = new Invitation()
+        {
+            Accepted = false,
+            Seen = false,
+            DateSend = DateTime.Now,
+            Id = 0,
+            Message = "Test"
+        };
+
+        public static AscendUserToAdminRequest MOCKRETURN_USERTOASCEND = new AscendUserToAdminRequest()
+        {
+            RequestingUser = new User()
+            {
+                Email = "user@example.com",
+                Id = 0,
+                Name = "string",
+                Salt = "SALT",
+                Invitations = new List<Invitation>()
+                {
+                   new Invitation()
+                   {
+                    Accepted = false,
+                    Seen = false,
+                    DateSend = DateTime.Now,
+                    Id = 0,
+                    Message = "Test"
+                   }
+                },
+                Banned = false,
+                HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password", "SALT")),
+                Role = Chat_App_Library.Enums.Role.Admin,
+                Username = "string"
+
+            },
+
+           UserToAscend = 
+            new User()
+            {
+                Email = "test",
+                Id = 1,
+                Name = "test",
+                Salt = "SALT",
+                Invitations = new List<Invitation>()
+                {
+                   new Invitation()
+                   {
+                    Accepted = false,
+                    Seen = false,
+                    DateSend = DateTime.Now,
+                    Id = 0,
+                    Message = "Test"
+                   }
+                },
+                Banned = false,
+                HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password", "SALT")),
+                Username = "test"
+
+            },
+        };
     }
 }
