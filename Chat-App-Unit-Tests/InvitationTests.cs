@@ -3,6 +3,7 @@ using Chat_App_Bussiness_Logic.Services;
 using Chat_App_Library.Interfaces;
 using Chat_App_Library.Singletons;
 using Chat_App_Logic.Mocks;
+using Chat_App_Unit_Tests.MockingDatabase;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -25,6 +26,7 @@ namespace Chat_App_Unit_Tests
         private readonly IRepository _repo;
         private readonly IGroupService _groupService;
         private readonly ICredentialsService _credentialsService;
+        private IRepository _EF6Repo;
         public InvitationTests()
         {
             var builder = new ConfigurationBuilder()
@@ -42,6 +44,7 @@ namespace Chat_App_Unit_Tests
             services.AddSingleton(typeof(IInvitationService), new InvitationService(DatabaseSingleton.GetSingleton()));
             services.AddSingleton(typeof(IRepository), DatabaseSingleton.GetSingleton().GetRepository());
             services.AddSingleton<ICredentialsService, CredentialsService>();
+            services.AddScoped<IRepository, TestRepository>();
 
             var key = Encoding.ASCII.GetBytes(_configuration["JwtConfig:Secret"]);
 
@@ -72,6 +75,7 @@ namespace Chat_App_Unit_Tests
             _databaseSingleton = serviceProvider.GetService<IDatabaseSingleton>();
             _groupService = serviceProvider.GetService<IGroupService>();
             _credentialsService = serviceProvider.GetService<ICredentialsService>();
+            _EF6Repo = serviceProvider.GetService<IRepository>();
 
             _repo = _databaseSingleton.GetRepository();
 
@@ -86,6 +90,21 @@ namespace Chat_App_Unit_Tests
             var MockingRepository = new Mock<IRepository>();
             MockingRepository.Setup(a => a.GetUsers()).Returns(MOCKRETURN_USERS);
             _databaseSingleton.SetRepository(new MockingRepository());
+            var invitationservice = new InvitationService(_databaseSingleton);
+            var controller = new Chat_App_JWT_API.Controllers.InvitationController(invitationservice);
+            var Return = await controller.SendInvitation(1, Chat_App_Library.Enums.GroupType.groupchat, 1, MOCKRETURN_INVITATION) as OkObjectResult;
+            Assert.NotNull(Return);
+        }
+
+
+        [Fact]
+        public async Task SEND_INVITATION_EF6()
+        {
+            LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
+            PATH.SetToUnitTesting();
+            _EF6Repo.ClearAllDataSets();
+            _EF6Repo.SeedMoqData();
+            _databaseSingleton.SetRepository(_EF6Repo);
             var invitationservice = new InvitationService(_databaseSingleton);
             var controller = new Chat_App_JWT_API.Controllers.InvitationController(invitationservice);
             var Return = await controller.SendInvitation(1, Chat_App_Library.Enums.GroupType.groupchat, 1, MOCKRETURN_INVITATION) as OkObjectResult;
@@ -110,6 +129,19 @@ namespace Chat_App_Unit_Tests
             var Return = await controller.AcceptInvitation(0, MOCKRETURN_INVITATION) as OkObjectResult;
             Assert.NotNull(Return);
         }
+        [Fact]
+        public async Task ACCEPT_INVITATION_EF6()
+        {
+            LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
+            PATH.SetToUnitTesting();
+            _EF6Repo.ClearAllDataSets();
+            _EF6Repo.SeedMoqData();
+            _databaseSingleton.SetRepository(_EF6Repo);
+            var invitationservice = new InvitationService(_databaseSingleton);
+            var controller = new Chat_App_JWT_API.Controllers.InvitationController(invitationservice);
+            var Return = await controller.AcceptInvitation(0, MOCKRETURN_INVITATION) as OkObjectResult;
+            Assert.NotNull(Return);
+        }
         /// <summary>
         /// Test only works in debugging mode!
         /// </summary>
@@ -128,6 +160,20 @@ namespace Chat_App_Unit_Tests
         }
 
         [Fact]
+        public async Task DECLINE_INVITATION_EF6()
+        {
+            LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
+            PATH.SetToUnitTesting();
+            _EF6Repo.ClearAllDataSets();
+            _EF6Repo.SeedMoqData();
+            _databaseSingleton.SetRepository(_EF6Repo);
+            var invitationservice = new InvitationService(_databaseSingleton);
+            var controller = new Chat_App_JWT_API.Controllers.InvitationController(invitationservice);
+            var Return = await controller.DeclineInvitation(0, MOCKRETURN_INVITATION) as OkObjectResult;
+            Assert.NotNull(Return);
+        }
+
+        [Fact]
 
         public async Task GET_GROUP()
         {
@@ -139,6 +185,21 @@ namespace Chat_App_Unit_Tests
             MockingRepository.Setup(a => a.GetSingleUserChat()).Returns(MOCKRETURN_SINGLE_USER_CHATS);
             MockingRepository.Setup(a => a.GetUserById(a => a.Id == 1)).Returns(MOCKRETURN_USER);
             _databaseSingleton.SetRepository(new MockingRepository());
+            var invitationservice = new InvitationService(_databaseSingleton);
+            var controller = new Chat_App_JWT_API.Controllers.InvitationController(invitationservice);
+            var Return = await controller.DeclineInvitation(0, MOCKRETURN_INVITATION) as OkObjectResult;
+            Assert.NotNull(Return);
+        }
+
+        [Fact]
+
+        public async Task GET_GROUP_EF6()
+        {
+            LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
+            PATH.SetToUnitTesting();
+            _EF6Repo.ClearAllDataSets();
+            _EF6Repo.SeedMoqData();
+            _databaseSingleton.SetRepository(_EF6Repo);
             var invitationservice = new InvitationService(_databaseSingleton);
             var controller = new Chat_App_JWT_API.Controllers.InvitationController(invitationservice);
             var Return = await controller.DeclineInvitation(0, MOCKRETURN_INVITATION) as OkObjectResult;

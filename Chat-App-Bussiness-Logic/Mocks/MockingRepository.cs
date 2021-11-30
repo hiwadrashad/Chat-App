@@ -617,5 +617,10 @@ namespace Chat_App_Logic.Mocks
         {
             throw new NotImplementedException();
         }
+
+        public void ClearAllDataSets()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

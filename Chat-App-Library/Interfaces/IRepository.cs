@@ -23,7 +23,7 @@ namespace Chat_App_Library.Interfaces
         public List<GeneralChat> GetGeneralChat();
         public List<SingleUserChat> GetSingleUserChat();
         public List<Message> GetMessages();
-        public List<Message> GetMessagesByUserId(Expression<Func<Message,bool>> id);
+        public List<Message> GetMessagesByUserId(Expression<Func<Message, bool>> id);
         public User? GetUserById(Expression<Func<User, bool>> id);
         public List<User> GetUserByName(Expression<Func<User, bool>> name);
         public List<GroupChat> GetGroupChatsByUserId(Expression<Func<GroupChat, bool>> id);
@@ -47,5 +47,6 @@ namespace Chat_App_Library.Interfaces
         public void BlockUserFromGroupChat(int UserId, GroupChat Chat);
         public void AddUserToGroupChat(int UserId, GroupChat Chat);
         public void SeedMoqData();
+        public void ClearAllDataSets();
     }
 }

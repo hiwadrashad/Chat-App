@@ -7,6 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Chat_App_Logic.Repositories
 {
@@ -32,27 +33,20 @@ namespace Chat_App_Logic.Repositories
 
         public void ClearAllDataSets()
         {
-            
-            foreach (var item in _dbContext.GeneralChatDatabase)
-            {
-                _dbContext.GeneralChatDatabase.Remove(item);
-            }
-            foreach (var item in _dbContext.GroupChatDatabase)
-            {
-                _dbContext.GroupChatDatabase.Remove(item);
-            }
-            foreach (var item in _dbContext.MessageDatabase)
-            {
-                _dbContext.MessageDatabase.Remove(item);
-            }
-            foreach (var item in _dbContext.SingleUserChatDatabase)
-            {
-                _dbContext.SingleUserChatDatabase.Remove(item);
-            }
-            foreach (var item in _dbContext.UserDatabase)
-            {
-                _dbContext.UserDatabase.Remove(item);
-            }
+            _dbContext.Database.ExecuteSqlRaw("DELETE FROM [Invitation]");
+            _dbContext.UserDatabase.RemoveRange(_dbContext.UserDatabase);
+            _dbContext.SingleUserChatDatabase.RemoveRange(_dbContext.SingleUserChatDatabase);
+            _dbContext.MessageDatabase.RemoveRange(_dbContext.MessageDatabase);
+            _dbContext.GroupChatDatabase.RemoveRange(_dbContext.GroupChatDatabase);
+            _dbContext.GeneralChatDatabase.RemoveRange(_dbContext.GeneralChatDatabase);
+            _dbContext.Database.ExecuteSqlRaw("DBCC CHECKIDENT('GeneralChatDatabase',RESEED,0);");
+            _dbContext.Database.ExecuteSqlRaw("DBCC CHECKIDENT('GroupChatDatabase',RESEED,0);");
+            _dbContext.Database.ExecuteSqlRaw("DBCC CHECKIDENT('Invitation',RESEED,0);");
+            _dbContext.Database.ExecuteSqlRaw("DBCC CHECKIDENT('MessageDatabase',RESEED,0);");
+            _dbContext.Database.ExecuteSqlRaw("DBCC CHECKIDENT('RefreshTokens',RESEED,0);");
+            _dbContext.Database.ExecuteSqlRaw("DBCC CHECKIDENT('SingleUserChatDatabase',RESEED,0);");
+            _dbContext.Database.ExecuteSqlRaw("DBCC CHECKIDENT('UserDatabase',RESEED,0);");
+            _dbContext.SaveChanges();
         }
         public List<RefreshToken> GetAllRefreshTokens()
         {
@@ -398,7 +392,268 @@ namespace Chat_App_Logic.Repositories
                 Username = "test"
 
               }
-            });           
+            });
+            _dbContext.MessageDatabase.AddRange(new List<Message>()
+            {
+             new Message()
+             {
+                EndDate = DateTime.Now,
+                StartDate = DateTime.Now,
+                Text = "test",
+                User =  new User() {
+                Email = "test",
+                //Id = 1,
+                Name = "test",
+                Salt = "SALT",
+                     Invitations = new List<Invitation>()
+                {
+                   new Invitation()
+                   {
+                    Accepted = false,
+                    Seen = false,
+                    DateSend = DateTime.Now,
+                    //Id = 0,
+                    Message = "Test"
+                   }
+                },
+                Banned = false,
+                HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
+                Role = Chat_App_Library.Enums.Role.Admin,
+                Username = "test"
+
+              }
+             }
+            });
+            _dbContext.SingleUserChatDatabase.AddRange(new List<SingleUserChat>()
+                {
+                  new SingleUserChat()
+                  {
+
+                    OriginUser = new User()
+                   {
+                Email = "test",
+                //Id = 1,
+                Name = "test",
+                Salt = "SALT",
+                Invitations = new List<Invitation>()
+                    {
+                       new Invitation()
+                       {
+                        Accepted = false,
+                        Seen = false,
+                        DateSend = DateTime.Now,
+                        //Id = 0,
+                        Message = "Test"
+                       }
+                    },
+                Banned = false,
+                HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password", "SALT")),
+                Username = "test"
+            },
+            RecipientUser = new User()
+            {
+                Email = "test",
+                //Id = 2,
+                Name = "test",
+                Salt = "SALT",
+                Invitations = new List<Invitation>()
+                    {
+                       new Invitation()
+                       {
+                        Accepted = false,
+                        Seen = false,
+                        DateSend = DateTime.Now,
+                        //Id = 0,
+                        Message = "Test"
+                       }
+                    },
+                Banned = false,
+                HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password", "SALT")),
+                Username = "test"
+            },
+            CreationDate = DateTime.Now,
+                    //Id = 1,
+                    Title = "test",
+                    BannedUsers = new List<User>(),
+                    ChatBanned = false,
+                    MaxAmountPersons = 0,
+                    HashBase64 = "LynvGw5uWxVFi4bnuNqrWBByLwQFKoMF3XEEtIftGes=",
+                    Private = false,
+                    Messages = new List<Message>()
+                    {
+                         new Message()
+                         {
+                          EndDate = DateTime.Now,
+                          //Id = 1,
+                          StartDate = DateTime.Now,
+                          Text = "test",
+                          User =    new User() {
+                          Email = "test",
+                          //Id = 1,
+                          Name = "test",
+                          Salt = "SALT",
+                               Invitations = new List<Invitation>()
+                    {
+                       new Invitation()
+                       {
+                        Accepted = false,
+                        Seen = false,
+                        DateSend = DateTime.Now,
+                        //Id = 0,
+                        Message = "Test"
+                       }
+                    },
+                          Banned = false,
+                    HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
+                          Role = Chat_App_Library.Enums.Role.Admin,
+                          Username = "test"
+
+                         }
+                    }
+
+                    }
+                  }
+                });
+            _dbContext.GeneralChatDatabase.AddRange(new List<GeneralChat>()
+                {
+                  new GeneralChat()
+                  {
+                   CreationDate = DateTime.Now,
+                   //Id = 1,
+                   Title = "test",
+                   BannedUsers = new List<User>(),
+                   ChatBanned = false,
+                   Owner=
+                              new User() {
+                    Email = "user@example.com",
+                    //Id = 0,
+                    Name = "string",
+                    Salt = "SALT",
+                         Invitations = new List<Invitation>()
+                    {
+                       new Invitation()
+                       {
+                        Accepted = false,
+                        Seen = false,
+                        DateSend = DateTime.Now,
+                        //Id = 0,
+                        Message = "Test"
+                       }
+                    },
+                    Banned = false,
+                    HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
+                    Role = Chat_App_Library.Enums.Role.Admin,
+                    Username = "string"
+
+                   },
+                   MaxAmountPersons = 0,
+                   Password = "password",
+                   Messages = new List<Message>()
+                   {
+                           new Message()
+                   {
+                    EndDate = DateTime.Now,
+                    //Id = 1,
+                    StartDate = DateTime.Now,
+                    Text = "test",
+                    User =    new User() {
+                    Email = "test",
+                    //Id = 1,
+                    Name = "test",
+                    Salt = "SALT",
+                         Invitations = new List<Invitation>()
+                    {
+                       new Invitation()
+                       {
+                        Accepted = false,
+                        Seen = false,
+                        DateSend = DateTime.Now,
+                        //Id = 0,
+                        Message = "Test"
+                       }
+                    },
+                    Banned = false,
+                    HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
+                    Role = Chat_App_Library.Enums.Role.Admin,
+                    Username = "test"
+
+                  }
+                   }
+                   }
+
+                  }
+                });
+            _dbContext.GroupChatDatabase.AddRange(new List<GroupChat>()
+            {
+             new GroupChat()
+             {
+                CreationDate = DateTime.Now,
+                Title = "test",
+                GroupOwner =        new User() {
+                Email = "test",
+                //Id = 0,
+                Name = "test",
+                Salt = "SALT",
+                     Invitations = new List<Invitation>()
+                {
+                   new Invitation()
+                   {
+                    Accepted = false,
+                    Seen = false,
+                    DateSend = DateTime.Now,
+                    //Id = 0,
+                    Message = "Test"
+                   }
+                },
+                Banned = false,
+                HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
+                Role = Chat_App_Library.Enums.Role.Admin,
+                Username = "test"
+
+              },
+                Messages = new List<Message>()
+             {
+                new Message()
+             {
+                 EndDate = DateTime.Now,
+                 //Id = 1,
+                 StartDate = DateTime.Now,
+                 Text = "test",
+             }
+             },
+               BannedUsers = new List<User>(),
+               ChatBanned = false,
+               MaxAmountPersons = 0,
+               HashBase64 = "LynvGw5uWxVFi4bnuNqrWBByLwQFKoMF3XEEtIftGes=",
+               Private = false,
+             Users = new List<User>()
+             {
+               new User() {
+                Email = "test",
+                //Id = 1,
+                Name = "test",
+                Salt = "SALT",
+                     Invitations = new List<Invitation>()
+                {
+                   new Invitation()
+                   {
+                    Accepted = false,
+                    Seen = false,
+                    DateSend = DateTime.Now,
+                    //Id = 0,
+                    Message = "Test"
+                   }
+                },
+                Banned = false,
+                HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
+                Role = Chat_App_Library.Enums.Role.Admin,
+                Username = "test"
+
+              }
+             }
+
+             }
+            });
             _dbContext.SaveChanges();
         }
     }

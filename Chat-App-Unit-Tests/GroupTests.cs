@@ -5,6 +5,7 @@ using Chat_App_Library.Interfaces;
 using Chat_App_Library.Models;
 using Chat_App_Library.Singletons;
 using Chat_App_Logic.Mocks;
+using Chat_App_Unit_Tests.MockingDatabase;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -27,6 +28,7 @@ namespace Chat_App_Unit_Tests
         private readonly IRepository _repo;
         private readonly IGroupService _groupService;
         private readonly ICredentialsService _credentialsService;
+        private IRepository _EF6Repo;
         public GroupTests()
         {
             var builder = new ConfigurationBuilder()
@@ -44,6 +46,7 @@ namespace Chat_App_Unit_Tests
             services.AddSingleton(typeof(IInvitationService), new InvitationService(DatabaseSingleton.GetSingleton()));
             services.AddSingleton(typeof(IRepository), DatabaseSingleton.GetSingleton().GetRepository());
             services.AddSingleton<ICredentialsService, CredentialsService>();
+            services.AddScoped<IRepository, TestRepository>();
 
             var key = Encoding.ASCII.GetBytes(_configuration["JwtConfig:Secret"]);
 
@@ -74,6 +77,7 @@ namespace Chat_App_Unit_Tests
             _databaseSingleton = serviceProvider.GetService<IDatabaseSingleton>();
             _groupService = serviceProvider.GetService<IGroupService>();
             _credentialsService = serviceProvider.GetService<ICredentialsService>();
+            _EF6Repo = serviceProvider.GetService<IRepository>();
 
             _repo = _databaseSingleton.GetRepository();
 
@@ -94,7 +98,19 @@ namespace Chat_App_Unit_Tests
             var Return = await controller.AddGroupChat("password",MOCKRETURN_GROUPCHAT) as OkObjectResult;
             Assert.NotNull(Return);
         }
-
+        [Fact]
+        public async Task ADD_GROUP_CHAT_EF6()
+        {
+            LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
+            PATH.SetToUnitTesting();
+            _EF6Repo.ClearAllDataSets();
+            _EF6Repo.SeedMoqData();
+            _databaseSingleton.SetRepository(_EF6Repo);
+            var groupservice = new GroupService(_databaseSingleton);
+            var controller = new Chat_App__JWT_API.Controllers.GroupController(_databaseSingleton, groupservice);
+            var Return = await controller.AddGroupChat("password", MOCKRETURN_GROUPCHAT) as OkObjectResult;
+            Assert.NotNull(Return);
+        }
         [Fact]
         public async Task ADD_SINGLE_USER_CHAT()
         {
@@ -104,6 +120,20 @@ namespace Chat_App_Unit_Tests
             MockingRepository.Setup(a => a.GetUserById(a => a.Id == 1)).Returns(MOCKRETURN_USER);
             MockingRepository.Setup(a => a.AddSingleUserChat(MOCKRETURN_SINGLE_USER_CHAT));
             _databaseSingleton.SetRepository(new MockingRepository());
+            var groupservice = new GroupService(_databaseSingleton);
+            var controller = new Chat_App__JWT_API.Controllers.GroupController(_databaseSingleton, groupservice);
+            var test = await controller.AddSingleUserChat("password", MOCKRETURN_SINGLE_USER_CHAT) as BadRequestObjectResult;
+            var Return = await controller.AddSingleUserChat("password", MOCKRETURN_SINGLE_USER_CHAT) as OkObjectResult;
+            Assert.NotNull(Return);
+        }
+        [Fact]
+        public async Task ADD_SINGLE_USER_CHAT_EF6()
+        {
+            LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
+            PATH.SetToUnitTesting();
+            _EF6Repo.ClearAllDataSets();
+            _EF6Repo.SeedMoqData();
+            _databaseSingleton.SetRepository(_EF6Repo);
             var groupservice = new GroupService(_databaseSingleton);
             var controller = new Chat_App__JWT_API.Controllers.GroupController(_databaseSingleton, groupservice);
             var test = await controller.AddSingleUserChat("password", MOCKRETURN_SINGLE_USER_CHAT) as BadRequestObjectResult;
@@ -125,6 +155,20 @@ namespace Chat_App_Unit_Tests
             Assert.NotNull(Return);
         }
         [Fact]
+        public async Task ADD_GENERAL_CHAT_EF6()
+        {
+            LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
+            PATH.SetToUnitTesting();
+            var MockingRepository = new Mock<IRepository>();
+            _EF6Repo.ClearAllDataSets();
+            _EF6Repo.SeedMoqData();
+            _databaseSingleton.SetRepository(_EF6Repo);
+            var groupservice = new GroupService(_databaseSingleton);
+            var controller = new Chat_App__JWT_API.Controllers.GroupController(_databaseSingleton, groupservice);
+            var Return = await controller.AddGeneralChat(MOCKRETURN_GENERALCHAT) as OkObjectResult;
+            Assert.NotNull(Return);
+        }
+        [Fact]
         public async Task DELETE_GENERAL_CHAT()
         {
             LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
@@ -139,6 +183,19 @@ namespace Chat_App_Unit_Tests
             Assert.NotNull(Return);
         }
         [Fact]
+        public async Task DELETE_GENERAL_CHAT_EF6()
+        {
+            LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
+            PATH.SetToUnitTesting();
+            _EF6Repo.ClearAllDataSets();
+            _EF6Repo.SeedMoqData();
+            _databaseSingleton.SetRepository(_EF6Repo);
+            var groupservice = new GroupService(_databaseSingleton);
+            var controller = new Chat_App__JWT_API.Controllers.GroupController(_databaseSingleton, groupservice);
+            var Return = await controller.DeleteGeneralChat(1, MOCKRETURN_GENERALCHAT) as OkObjectResult;
+            Assert.NotNull(Return);
+        }
+        [Fact]
         public async Task DELETE_GROUP()
         {
             LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
@@ -147,6 +204,19 @@ namespace Chat_App_Unit_Tests
             MockingRepository.Setup(a => a.GetUserById(a => a.Id == 1)).Returns(MOCKRETURN_USER);
             MockingRepository.Setup(a => a.DeleteGroup(MOCKRETURN_GROUPCHAT));
             _databaseSingleton.SetRepository(new MockingRepository());
+            var groupservice = new GroupService(_databaseSingleton);
+            var controller = new Chat_App__JWT_API.Controllers.GroupController(_databaseSingleton, groupservice);
+            var Return = await controller.DeleteGroup(1, MOCKRETURN_GROUPCHAT) as OkObjectResult;
+            Assert.NotNull(Return);
+        }
+        [Fact]
+        public async Task DELETE_GROUP_EF6()
+        {
+            LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
+            PATH.SetToUnitTesting();
+            _EF6Repo.ClearAllDataSets();
+            _EF6Repo.SeedMoqData();
+            _databaseSingleton.SetRepository(_EF6Repo);
             var groupservice = new GroupService(_databaseSingleton);
             var controller = new Chat_App__JWT_API.Controllers.GroupController(_databaseSingleton, groupservice);
             var Return = await controller.DeleteGroup(1, MOCKRETURN_GROUPCHAT) as OkObjectResult;
@@ -166,6 +236,21 @@ namespace Chat_App_Unit_Tests
             var Return = await controller.DeleteSinglePersonChat(1, MOCKRETURN_SINGLE_USER_CHAT) as OkObjectResult;
             Assert.NotNull(Return);
         }
+
+        [Fact]
+        public async Task DELETE_SINGLE_PERSON_CHAT_EF6()
+        {
+            LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
+            PATH.SetToUnitTesting();
+            _EF6Repo.ClearAllDataSets();
+            _EF6Repo.SeedMoqData();
+            _databaseSingleton.SetRepository(_EF6Repo);
+            var groupservice = new GroupService(_databaseSingleton);
+            var controller = new Chat_App__JWT_API.Controllers.GroupController(_databaseSingleton, groupservice);
+            var Return = await controller.DeleteSinglePersonChat(1, MOCKRETURN_SINGLE_USER_CHAT) as OkObjectResult;
+            Assert.NotNull(Return);
+        }
+
 
         [Fact]
         public async Task GET_GROUP_CHATS_BY_USER_ID()
@@ -196,6 +281,19 @@ namespace Chat_App_Unit_Tests
             Assert.NotNull(Return);
         }
         [Fact]
+        public async Task GET_SINGLE_USER_CHATS_BY_USER_ID_EF6()
+        {
+            LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
+            PATH.SetToUnitTesting();
+            _EF6Repo.ClearAllDataSets();
+            _EF6Repo.SeedMoqData();
+            _databaseSingleton.SetRepository(_EF6Repo);
+            var groupservice = new GroupService(_databaseSingleton);
+            var controller = new Chat_App__JWT_API.Controllers.GroupController(_databaseSingleton, groupservice);
+            var Return = await controller.GetSingleUserChatByUserId(1) as OkObjectResult;
+            Assert.NotNull(Return);
+        }
+        [Fact]
         public async Task GET_GROUPS_CHAT()
         {
             LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
@@ -204,6 +302,19 @@ namespace Chat_App_Unit_Tests
             MockingRepository.Setup(a => a.GetUserById(a => a.Id == 1)).Returns(MOCKRETURN_USER);
             MockingRepository.Setup(a => a.GetGroupChats()).Returns(MOCKRETURN_GROUPCHATS);
             _databaseSingleton.SetRepository(new MockingRepository());
+            var groupservice = new GroupService(_databaseSingleton);
+            var controller = new Chat_App__JWT_API.Controllers.GroupController(_databaseSingleton, groupservice);
+            var Return = await controller.GetGroupsChat(1) as OkObjectResult;
+            Assert.NotNull(Return);
+        }
+        [Fact]
+        public async Task GET_GROUPS_CHAT_EF6()
+        {
+            LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
+            PATH.SetToUnitTesting();
+            _EF6Repo.ClearAllDataSets();
+            _EF6Repo.SeedMoqData();
+            _databaseSingleton.SetRepository(_EF6Repo);
             var groupservice = new GroupService(_databaseSingleton);
             var controller = new Chat_App__JWT_API.Controllers.GroupController(_databaseSingleton, groupservice);
             var Return = await controller.GetGroupsChat(1) as OkObjectResult;
@@ -224,6 +335,19 @@ namespace Chat_App_Unit_Tests
             Assert.NotNull(Return);
         }
         [Fact]
+        public async Task GET_GENERAL_CHAT_EF6()
+        {
+            LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
+            PATH.SetToUnitTesting();
+            _EF6Repo.ClearAllDataSets();
+            _EF6Repo.SeedMoqData();
+            _databaseSingleton.SetRepository(_EF6Repo);
+            var groupservice = new GroupService(_databaseSingleton);
+            var controller = new Chat_App__JWT_API.Controllers.GroupController(_databaseSingleton, groupservice);
+            var Return = await controller.GetGeneralChat(1) as OkObjectResult;
+            Assert.NotNull(Return);
+        }
+        [Fact]
         public async Task GET_SINGLE_USER_CHAT()
         {
             LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
@@ -232,6 +356,19 @@ namespace Chat_App_Unit_Tests
             MockingRepository.Setup(a => a.GetUserById(a => a.Id == 1)).Returns(MOCKRETURN_USER);
             MockingRepository.Setup(a => a.GetSingleUserChatByUserId(a => a.Id == 1)).Returns(MOCKRETURN_SINGLE_USER_CHATS);
             _databaseSingleton.SetRepository(new MockingRepository());
+            var groupservice = new GroupService(_databaseSingleton);
+            var controller = new Chat_App__JWT_API.Controllers.GroupController(_databaseSingleton, groupservice);
+            var Return = await controller.GetSingleUserChatByUserId(1) as OkObjectResult;
+            Assert.NotNull(Return);
+        }
+        [Fact]
+        public async Task GET_SINGLE_USER_CHAT_EF6()
+        {
+            LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
+            PATH.SetToUnitTesting();
+            _EF6Repo.ClearAllDataSets();
+            _EF6Repo.SeedMoqData();
+            _databaseSingleton.SetRepository(_EF6Repo);
             var groupservice = new GroupService(_databaseSingleton);
             var controller = new Chat_App__JWT_API.Controllers.GroupController(_databaseSingleton, groupservice);
             var Return = await controller.GetSingleUserChatByUserId(1) as OkObjectResult;

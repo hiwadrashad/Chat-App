@@ -7,6 +7,7 @@ using Chat_App_Library.Interfaces;
 using Chat_App_Library.Models;
 using Chat_App_Library.Singletons;
 using Chat_App_Logic.Mocks;
+using Chat_App_Unit_Tests.MockingDatabase;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -30,6 +31,7 @@ namespace Chat_App_Unit_Tests
         private readonly IChatService _chatService;
         private readonly ICredentialsService _credentialsService;
         private readonly ICredentialsController _credentialsController;
+        private IRepository _EF6Repo;
         public CredentialsTests()
         {
             var builder = new ConfigurationBuilder()
@@ -48,6 +50,8 @@ namespace Chat_App_Unit_Tests
             services.AddSingleton(typeof(IRepository), DatabaseSingleton.GetSingleton().GetRepository());
             services.AddSingleton<ICredentialsService, CredentialsService>();
             services.AddSingleton<ICredentialsController, CredentialsController>();
+            services.AddScoped<IRepository, TestRepository>();
+
 
             var key = Encoding.ASCII.GetBytes(_configuration["JwtConfig:Secret"]);
 
@@ -79,6 +83,7 @@ namespace Chat_App_Unit_Tests
             _chatService = serviceProvider.GetService<IChatService>();
             _credentialsService = serviceProvider.GetService<ICredentialsService>();
             _credentialsController = serviceProvider.GetService<ICredentialsController>();
+            _EF6Repo = serviceProvider.GetService<IRepository>();
 
             _repo = _databaseSingleton.GetRepository();
 
@@ -96,7 +101,18 @@ namespace Chat_App_Unit_Tests
             var Return = await _credentialsController.Login("password", MOCKRETURN_USER) as OkObjectResult;
             Assert.NotNull(Return);
         }
-
+        [Fact]
+        public async Task LOGIN_EF6()
+        {
+            LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
+            PATH.SetToUnitTesting();
+            var MockingRepository = new Mock<IRepository>();
+            MockingRepository.Setup(a => a.GetUsers()).Returns(MOCKRETURN_USERS);
+            _databaseSingleton.SetRepository(new MockingRepository());
+            var chatService = _credentialsService;
+            var Return = await _credentialsController.Login("password", MOCKRETURN_USER) as OkObjectResult;
+            Assert.NotNull(Return);
+        }
         [Fact]
         public async Task MAKE_USER_ADMIN()
         {
@@ -157,6 +173,8 @@ namespace Chat_App_Unit_Tests
             Assert.NotNull(Return);
         }
 
+
+
         [Fact]
 
         public async Task GET_USERS()
@@ -215,7 +233,7 @@ namespace Chat_App_Unit_Tests
 
         [Fact]
 
-        public async Task BanUser()
+        public async Task BAN_USER()
         {
             LoggingPathSingleton PATH = LoggingPathSingleton.GetSingleton();
             PATH.SetToUnitTesting();

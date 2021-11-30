@@ -30,6 +30,7 @@ namespace Chat_App__JWT_API.Controllers
         public async Task<IActionResult> Test()
         {
             ChatDbContextRepository DBContext = new ChatDbContextRepository();
+            DBContext.ClearAllDataSets();
             DBContext.SeedMoqData();
             return Ok();
         }

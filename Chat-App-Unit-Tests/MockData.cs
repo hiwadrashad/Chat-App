@@ -130,6 +130,37 @@ namespace Chat_App_Unit_Tests
             }
         };
 
+        public static Message MOCKRETURN_MESSAGE_NO_KEY = new Message()
+        {
+            EndDate = DateTime.Now,
+            StartDate = DateTime.Now,
+            Text = "test",
+            UserId = 1,
+            User = new User()
+            {
+                Email = "test",
+                Id = 1,
+                Name = "test",
+                Salt = "SALT",
+                Invitations = new List<Invitation>()
+                {
+                   new Invitation()
+                   {
+                    Accepted = false,
+                    Seen = false,
+                    DateSend = DateTime.Now,
+                    Id = 0,
+                    Message = "Test"
+                   }
+                },
+                Banned = false,
+                HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password", "SALT")),
+                Role = Chat_App_Library.Enums.Role.Admin,
+                Username = "test"
+
+            }
+        };
+
         public static List<Message> MOCKRETURN_MESSAGES = new List<Message>()
             {
             new Message()

@@ -20,17 +20,17 @@ namespace Chat_App_Unit_Tests.MockingDatabase
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {
-            builder.UseSqlServer(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=Chat-App-Backend;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+            builder.UseSqlServer(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=Chat-App-Xunit;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.ApplyConfiguration(new Chat_App_Database.Builder_Configuration.MessageConfiguration());
-            modelBuilder.ApplyConfiguration(new Chat_App_Database.Builder_Configuration.GeneralChatConfiguration());
-            modelBuilder.ApplyConfiguration(new Chat_App_Database.Builder_Configuration.GroupChatConfiguration());
-            modelBuilder.ApplyConfiguration(new Chat_App_Database.Builder_Configuration.RefreshConfiguration());
-            modelBuilder.ApplyConfiguration(new Chat_App_Database.Builder_Configuration.UserConfiguration());
+            //modelBuilder.ApplyConfiguration(new Chat_App_Database.Builder_Configuration.MessageConfiguration());
+            //modelBuilder.ApplyConfiguration(new Chat_App_Database.Builder_Configuration.GeneralChatConfiguration());
+            //modelBuilder.ApplyConfiguration(new Chat_App_Database.Builder_Configuration.GroupChatConfiguration());
+            //modelBuilder.ApplyConfiguration(new Chat_App_Database.Builder_Configuration.RefreshConfiguration());
+            //modelBuilder.ApplyConfiguration(new Chat_App_Database.Builder_Configuration.UserConfiguration());
         }
     }
 }
