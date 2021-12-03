@@ -145,6 +145,27 @@ namespace Chat_App_Logic.Mocks
                 Role = Chat_App_Library.Enums.Role.Admin,
                 Username = "test"
 
+              },
+                new User() {
+                Email = "hiwad.rashad@itvitaelearning.nl",
+                Id = 2,
+                Name = "test",
+                Salt = "SALT",
+                     Invitations = new List<Invitation>()
+                {
+                   new Invitation()
+                   {
+                    Accepted = false,
+                    Seen = false,
+                    DateSend = DateTime.Now,
+                    Id = 0,
+                    Message = "Test"
+                   }
+                },
+                Banned = false,
+                HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
+                Username = "test"
+
               }
              }
              

@@ -26,11 +26,6 @@ namespace Chat_App_Unit_Tests.MockingDatabase
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            //modelBuilder.ApplyConfiguration(new Chat_App_Database.Builder_Configuration.MessageConfiguration());
-            //modelBuilder.ApplyConfiguration(new Chat_App_Database.Builder_Configuration.GeneralChatConfiguration());
-            //modelBuilder.ApplyConfiguration(new Chat_App_Database.Builder_Configuration.GroupChatConfiguration());
-            //modelBuilder.ApplyConfiguration(new Chat_App_Database.Builder_Configuration.RefreshConfiguration());
-            //modelBuilder.ApplyConfiguration(new Chat_App_Database.Builder_Configuration.UserConfiguration());
         }
     }
 }

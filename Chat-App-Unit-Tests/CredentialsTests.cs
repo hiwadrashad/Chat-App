@@ -169,7 +169,7 @@ namespace Chat_App_Unit_Tests
             MockingRepository.Setup(a => a.GetUserById(a => a.Id == 1)).Returns(MOCKRETURN_USER);
             _databaseSingleton.SetRepository(new MockingRepository());
             var chatService = _credentialsService;
-            var Return = await _credentialsController.GetUsersByEmail("user@example.com", 1) as OkObjectResult;
+            var Return = await _credentialsController.GetUsersByEmail("user@example.com") as OkObjectResult;
             Assert.NotNull(Return);
         }
 

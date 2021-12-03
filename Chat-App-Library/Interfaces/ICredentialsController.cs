@@ -20,7 +20,7 @@ namespace Chat_App_Library.Interfaces
         [HttpPost("api/refreshtoken")]
         public Task<IActionResult> RefreshToken([FromBody] TokenRequest tokenRequest);
         [HttpGet("api/getusersbyemail/{id}/{requestingid}")]
-        public Task<IActionResult> GetUsersByEmail(string id, int requestingid);
+        public Task<IActionResult> GetUsersByEmail(string id);
         [HttpGet("api/getusers/{requestingid}")]
         public Task<IActionResult> GetUsers(int requestingid);
         [HttpGet("api/getuserbyid/{id}/{requestingid}")]

@@ -41,6 +41,8 @@ namespace Chat_App__JWT_API.Controllers
             _credentialService = credentialsService;
         }
 
+
+
         [HttpPost("api/makeuseradmin")]
         public async Task<IActionResult> MakeUserAdmin([FromBody] AscendUserToAdminRequest input)
         {
@@ -205,10 +207,10 @@ namespace Chat_App__JWT_API.Controllers
             });
         
         }
-        [HttpGet("api/getusersbyemail/{id}/{requestingid}")]
-        public async Task<IActionResult> GetUsersByEmail(string id, int requestingid)
+        [HttpGet("api/getusersbyemail/{id}")]
+        public async Task<IActionResult> GetUsersByEmail(string id)
         {
-            var Return = await _credentialService.GetUsersByEmail(id, requestingid);
+            var Return = await _credentialService.GetUsersByEmail(id);
             var ReturnConverted = Return as IEnumerable<User>;
             if (ReturnConverted != null)
             {
@@ -254,7 +256,7 @@ namespace Chat_App__JWT_API.Controllers
         [HttpGet("api/getusersbyname/{id}/{requestingid}")]
         public async Task<IActionResult> GetUsersByName(string id, int requestingid)
         {
-            var Return = await _credentialService.GetUsersByEmail(id,requestingid);
+            var Return = await _credentialService.GetUsersByEmail(id);
             var ReturnConverted = Return as IEnumerable<User>;
             if (ReturnConverted != null)
             {

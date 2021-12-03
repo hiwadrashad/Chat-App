@@ -12,14 +12,18 @@ namespace Chat_App_Library.Models
         public int Id { get; set; }
         public string Title { get; set; }
         public DateTime CreationDate { get; set; }
+        public string MessagesId { get; set; }
+        [ForeignKey("MessagesId")]
         public List<Message> Messages { get; set; } = new List<Message>();
-        public int? OwnerId { get; set; }
+        public int OwnerId { get; set; }
         [ForeignKey("OwnerId")]
         public User Owner { get; set; }
         public bool ChatBanned { get; set; }
         public int MaxAmountPersons { get; set; }
         public string Password { get; set; }
         public bool Private { get; set; }
+        public string BannedUsersId { get; set; }
+        [ForeignKey("BannedUsersId")]
         public List<User> BannedUsers { get; set; } = new List<User>();
     }
 }

@@ -37,7 +37,7 @@ namespace Chat_App_Bussiness_Logic.Services
             _tokenValidationParams = tokenValidationParameters;
             _jwtVerification = new JWTVerification(databaseSingleton, optionsMonitor, tokenValidationParameters);
         }
-
+       
         public async Task<object> Login(User input, AuthResult jwtToken)
         {
             try
@@ -251,44 +251,13 @@ namespace Chat_App_Bussiness_Logic.Services
             }
         }
 
-        public async Task<object> GetUsersByEmail(string id, int requestingid)
+        public async Task<object> GetUsersByEmail(string id)
         {
             try
             {
-                var User = await Task.Run(() => _repo.GetUserById(a =>
-                a.Id == requestingid));
-                
-
-                if (User == null)
-                {
-
-                    return new RegistrationResponse()
-                    {
-                        Errors = new List<string>() {
-                        "Requester not fond"
-                    },
-                        Success = false
-                    };
-                }
-                if (User.Banned == true && User.Role != Chat_App_Library.Enums.Role.Admin)
-                {
-                    return new RegistrationResponse()
-                    {
-                        Errors = new List<string>() {
-                        "You are banned"
-                    },
-                        Success = false
-                    };
-                }
-                IEnumerable<User> result;
-                if (User.Role == Chat_App_Library.Enums.Role.Admin)
-                {
-                    result = await Task.Run(() => _repo.GetUsers().Where(a => a.Email == id));
-                }
-                else
-                {
-                    result = await Task.Run(() => _repo.GetUsers().Where(a => a.Email == id).Where(a => a.Banned != true));
-                }
+               
+                var  result = await Task.Run(() => _repo.GetUsers().Where(a => a.Email == id));
+  
                 
                 return result;                
 

@@ -26,11 +26,6 @@ namespace Chat_App_Database.Database
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            //modelBuilder.ApplyConfiguration(new MessageConfiguration());
-            //modelBuilder.ApplyConfiguration(new GeneralChatConfiguration());
-            //modelBuilder.ApplyConfiguration(new GroupChatConfiguration());
-            //modelBuilder.ApplyConfiguration(new RefreshConfiguration());
-            //modelBuilder.ApplyConfiguration(new UserConfiguration());
         }
     }
 }

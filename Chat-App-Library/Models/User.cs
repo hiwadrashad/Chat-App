@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +21,8 @@ namespace Chat_App_Library.Models
         public string HashBase64 { get; set; }
         public Role Role { get; set; }
         public bool Banned { get; set; }
+        public string InvitationsId { get; set; }
+        [ForeignKey("InvitationsId")]
         public List<Invitation> Invitations { get; set; } = new List<Invitation>();
     }
 }

@@ -533,7 +533,7 @@ namespace Chat_App_Bussiness_Logic.Services
                 }
 
                 var Return = await Task.Run(() => _repo.
-                GetGroupChatsByUserId(a => a.Id == requestuserid).Where(a => a.ChatBanned != true)
+                GetGroupChatsByUserId(a => a.GroupOwner.Id == requestuserid || a.Users.Any(a => a.Id == requestuserid)).Where(a => a.ChatBanned != true)
                 .Where(a => a.BannedUsers.All(a => a.Id != requestuserid)));
 
                 return Return;
@@ -581,7 +581,7 @@ namespace Chat_App_Bussiness_Logic.Services
                 }
 
                 var Return = await Task.Run(() => _repo.
-                GetSingleUserChatByUserId(a => a.Id == requestuserid).Where(a => a.ChatBanned != true)
+                GetSingleUserChatByUserId(a => a.OriginUser.Id == requestuserid || a.RecipientUser.Id == requestuserid).Where(a => a.ChatBanned != true)
                 .Where(a => a.BannedUsers.All(a => a.Id != requestuserid)));
 
                 return Return;

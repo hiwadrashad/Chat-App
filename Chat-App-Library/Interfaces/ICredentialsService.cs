@@ -14,7 +14,7 @@ namespace Chat_App_Library.Interfaces
         public Task<object> MakeUserAdmin(AscendUserToAdminRequest input);
         public Task<object> Register(User input);
         public Task<object> RefreshToken(TokenRequest input);
-        public Task<object> GetUsersByEmail(string id, int requestingid);
+        public Task<object> GetUsersByEmail(string id);
         public Task<object> GetUsers(int requestingid);
         public Task<object> GetUserById(int id, int requestingid);
         public Task<object> GetUsersByName(string id, int requestingid);

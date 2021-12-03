@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ namespace Chat_App_Library.Models
         public bool IsRevoked { get; set; }
         public DateTime AddedDate { get; set; }
         public DateTime ExpiryDate { get; set; }
+        [ForeignKey("UserId")]
         public User User { get; set; }
     }
 }

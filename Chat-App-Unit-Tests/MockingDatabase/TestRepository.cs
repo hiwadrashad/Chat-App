@@ -474,27 +474,27 @@ namespace Chat_App_Unit_Tests.MockingDatabase
                 HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password", "SALT")),
                 Username = "test"
             },
-            RecipientUser = new User()
-            {
-                Email = "test",
+            RecipientUser =              new User() {
+                Email = "hiwad.rashad@itvitaelearning.nl",
                 //Id = 2,
                 Name = "test",
                 Salt = "SALT",
-                Invitations = new List<Invitation>()
-                    {
-                       new Invitation()
-                       {
-                        Accepted = false,
-                        Seen = false,
-                        DateSend = DateTime.Now,
-                        //Id = 0,
-                        Message = "Test"
-                       }
-                    },
+                     Invitations = new List<Invitation>()
+                {
+                   new Invitation()
+                   {
+                    Accepted = false,
+                    Seen = false,
+                    DateSend = DateTime.Now,
+                    Id = 0,
+                    Message = "Test"
+                   }
+                },
                 Banned = false,
-                HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password", "SALT")),
+                HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
                 Username = "test"
-            },
+
+              },
             CreationDate = DateTime.Now,
                     //Id = 1,
                     Title = "test",
@@ -652,9 +652,9 @@ namespace Chat_App_Unit_Tests.MockingDatabase
                Private = false,
              Users = new List<User>()
              {
-               new User() {
-                Email = "test",
-                //Id = 1,
+                new User() {
+                Email = "hiwad.rashad@itvitaelearning.nl",
+                //Id = 2,
                 Name = "test",
                 Salt = "SALT",
                      Invitations = new List<Invitation>()
@@ -664,13 +664,12 @@ namespace Chat_App_Unit_Tests.MockingDatabase
                     Accepted = false,
                     Seen = false,
                     DateSend = DateTime.Now,
-                    //Id = 0,
+                    Id = 0,
                     Message = "Test"
                    }
                 },
                 Banned = false,
                 HashBase64 = Convert.ToBase64String(Chat_App_Bussiness_Logic.Encryption.HashingAndSalting.GetHash("password","SALT")),
-                Role = Chat_App_Library.Enums.Role.Admin,
                 Username = "test"
 
               }
@@ -679,11 +678,13 @@ namespace Chat_App_Unit_Tests.MockingDatabase
              }
             });
             _dbContext.SaveChanges();
+        
 
             foreach (var entity in _dbContext.ChangeTracker.Entries())
             {
                 entity.State = EntityState.Detached;
             }
         }
+
     }
 }
